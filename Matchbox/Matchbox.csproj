@@ -4,4 +4,24 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\olog-template\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\.gitignore" />
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\dropdown.sketch" />
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\gulpfile.js" />
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\js\fastclick.js" />
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\js\jquery.js" />
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\js\jquery.nice-select.js" />
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\js\jquery.nice-select.min.js" />
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\js\prism.js" />
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\README.md" />
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\scss\nice-select.scss" />
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\scss\style.scss" />
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\scss\_nice-select-prefixed.scss" />
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\scss\_prism.scss" />
+  </ItemGroup>
+
 </Project>
