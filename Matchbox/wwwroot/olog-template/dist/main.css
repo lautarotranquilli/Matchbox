@@ -19754,8 +19754,12 @@ footer {
             }
 }
 
+.banner-area__content {
+    text-align: left;
+}
+
 .banner-area__content h2 {
-    font-size: 58px;
+    font-size: 54px;
     font-weight: 600;
     line-height: 66px;
     margin-bottom: 16px;
@@ -19765,13 +19769,9 @@ footer {
     margin-bottom: 32px;
 }
 
-.banner-area__img {
-    padding: 107px 0 87px 0;
+.banner-area__img img {
+    border-radius: 60px 8px 8px 8px;
 }
-
-    .banner-area__img img {
-        border-radius: 60px 8px 8px 8px;
-    }
 
 @media (min-width: 992px) and (max-width: 1200px) {
     .banner-area__content h2 {
@@ -19973,10 +19973,6 @@ footer {
         .breadcrumb-area h5 {
             font-size: 26px;
         }
-}
-
-.features {
-    padding: 100px 0;
 }
 
 .features-wrapper {
