@@ -19,7 +19,7 @@
             <div class="container">
                 <div class="nav-desktop d-none d-lg-block">
                     <nav class="menu-area d-flex align-items-center">
-                        <a class="nav-logo" href="">
+                        <a class="nav-logo" asp-controller="Home" asp-action="Index">
                             <img src="~/img/logo.png" alt="logo" />
                         </a>
                         <div class="search-bar mx-auto">
@@ -39,10 +39,10 @@
                             </div>
                         </div>
                         <ul class="main-menu d-flex align-items-center">
-                            <li><a href="">Inicio</a></li>
+                            <li><a asp-controller="Home" asp-action="Index">Inicio</a></li>
                             <li><a href="">Rubros</a></li>
-                            <li><a href="">Iniciar sesión</a></li>
-                            <li><a href="">Registrarse</a></li>
+                            <li><a asp-controller="Home" asp-action="SignIn">Iniciar sesión</a></li>
+                            <li><a asp-controller="Home" asp-action="SignUp">Registrarse</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -70,14 +70,14 @@
                             </div>
                         </div>
                         <ul>
-                            <li><a href="">Inicio</a></li>
+                            <li><a asp-controller="Home" asp-action="Index">Inicio</a></li>
                             <li><a href="">Rubros</a></li>
-                            <li><a href="">Iniciar sesión</a></li>
-                            <li><a href="">Registrarse</a></li>
+                            <li><a asp-controller="Home" asp-action="SignIn">Iniciar sesión</a></li>
+                            <li><a asp-controller="Home" asp-action="SignUp">Registrarse</a></li>
                         </ul>
                     </div>
                     <div class="mobile-nav d-flex align-items-center justify-content-between">
-                        <a class="nav-logo nav-logo-mobile" href="#">
+                        <a class="nav-logo nav-logo-mobile" asp-controller="Home" asp-action="Index">
                             <img src="~/img/logo.png" alt="logo" />
                         </a>
                         <div class="search-bar">

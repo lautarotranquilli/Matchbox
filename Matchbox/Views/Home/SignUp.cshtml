@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = "Registrarse";
+}
+
+<!-- Account-Login -->
+<section class="account-sign">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-12">
+                <div class="account-sign-up">
+                    <h5 class="text-center">Registrarse</h5>
+                    <form action="#">
+                        <div class="form__div">
+                            <input type="text" class="form__input" placeholder=" ">
+                            <label for="" class="form__label">Nombre completo</label>
+                        </div>
+                        <div class="form__div">
+                            <input type="email" class="form__input" placeholder=" ">
+                            <label for="" class="form__label">Email</label>
+                        </div>
+                        <div class="form__div">
+                            <input type="password" class="form__input" placeholder=" ">
+                            <label for="" class="form__label">Contraseña</label>
+                        </div>
+                        <div class="form__div mb-0">
+                            <input type="password" class="form__input" placeholder=" ">
+                            <label for="" class="form__label">Repetir contraseña</label>
+                        </div>
+                        <div class="password-info-show">
+                            <input type="checkbox" id="showpassagain" class="mb-0">
+                            <label for="showpassagain" class="mb-0">Mostrar contraseña</label>
+                        </div>
+                        <a href="" class="btn bg-primary">Registrarse</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script type="text/javascript">
+        $('main').css("background-color", "#EFEFEF")
+    </script>
+}
