@@ -4,4 +4,34 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\olog-template\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\.gitignore" />
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\dropdown.sketch" />
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\gulpfile.js" />
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\js\fastclick.js" />
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\js\jquery.js" />
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\js\jquery.nice-select.js" />
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\js\jquery.nice-select.min.js" />
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\js\prism.js" />
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\README.md" />
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\scss\nice-select.scss" />
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\scss\style.scss" />
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\scss\_nice-select-prefixed.scss" />
+    <None Include="wwwroot\lib\jquery-nice-select-1.1.0\scss\_prism.scss" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.28" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.25" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.25">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.5" />
+  </ItemGroup>
+
 </Project>
