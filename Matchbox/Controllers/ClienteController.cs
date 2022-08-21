@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Matchbox.Data;
+using Matchbox.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Matchbox.Data;
-using Matchbox.Models;
 
 namespace Matchbox.Controllers
 {
@@ -50,19 +51,64 @@ namespace Matchbox.Controllers
         }
 
         // POST: Clientes/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdUsuario,Nombre,Id,FechaAlta,FechaModificacion,FechaBaja")] Cliente cliente)
+        public async Task<IActionResult> Create([Bind("IdUsuario,Nombre,Apellido,Telefono,Email,Provincia,Localidad,FotoPerfil")] ClienteViewModel cliente)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(cliente);
+                string uniqueFileName = UploadedFile(cliente);
+                if (uniqueFileName == "-1")
+                {
+                    ModelState.AddModelError(nameof(cliente.FotoPerfil), "No se pudo cargar la imagen, inténtelo nuevamente");
+                    return View(cliente);
+                }
+
+                Cliente newClient = new Cliente
+                {
+                    IdUsuario = 2,
+                    Nombre = cliente.Nombre,
+                    Apellido = cliente.Apellido,
+                    Telefono = cliente.Telefono,
+                    Email = cliente.Email,
+                    Provincia = cliente.Provincia,
+                    Localidad = cliente.Localidad,
+                    ProfilePath = uniqueFileName,
+                    FechaAlta = DateTime.Now.Date,
+                    FechaModificacion = DateTime.Now
+                };
+
+                _context.Add(newClient);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Create));
             }
             return View(cliente);
+        }
+
+        private string UploadedFile(ClienteViewModel cliente)
+        {
+            string uniqueFileName = null;
+
+            if (cliente.FotoPerfil != null)
+            {
+                try
+                {
+                    string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "user-profile");
+                    uniqueFileName = Guid.NewGuid().ToString() + "_" + cliente.FotoPerfil.FileName;
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        cliente.FotoPerfil.CopyTo(fileStream);
+                    }
+                }
+                catch (Exception)
+                {
+                    uniqueFileName = "-1";
+                }
+            }
+            return uniqueFileName;
         }
 
         // GET: Clientes/Edit/5
@@ -82,11 +128,11 @@ namespace Matchbox.Controllers
         }
 
         // POST: Clientes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdUsuario,Nombre,Id,FechaAlta,FechaModificacion,FechaBaja")] Cliente cliente)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,IdUsuario,Nombre,Apellido,Telefono,Email,Provincia,Localidad,FechaAlta")] Cliente cliente)
         {
             if (id != cliente.Id)
             {
@@ -97,6 +143,7 @@ namespace Matchbox.Controllers
             {
                 try
                 {
+                    cliente.FechaModificacion = DateTime.Now;
                     _context.Update(cliente);
                     await _context.SaveChangesAsync();
                 }
@@ -140,8 +187,25 @@ namespace Matchbox.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var cliente = await _context.Cliente.FindAsync(id);
-            _context.Cliente.Remove(cliente);
-            await _context.SaveChangesAsync();
+
+            try
+            {
+                cliente.FechaModificacion = DateTime.Now;
+                cliente.FechaBaja = DateTime.Now.Date;
+                _context.Update(cliente);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ClienteExists(cliente.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
             return RedirectToAction(nameof(Index));
         }
 

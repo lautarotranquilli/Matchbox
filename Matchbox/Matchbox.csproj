@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="wwwroot\img\user-profile\" />
     <Folder Include="wwwroot\olog-template\" />
   </ItemGroup>
 
