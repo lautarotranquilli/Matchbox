@@ -15,5 +15,7 @@ namespace Matchbox.Data
         }
 
         public DbSet<Matchbox.Models.Cliente> Cliente { get; set; }
+
+        public DbSet<Matchbox.Models.Usuario> Usuario { get; set; }
     }
 }
