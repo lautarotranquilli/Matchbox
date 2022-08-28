@@ -7,7 +7,7 @@
 <div class="text-left">
     <a asp-action="Index">← Volver</a>
 </div>
-<h2>Crear perfil de cliente</h2>
+<h2 class="text-center">Crear perfil de cliente</h2>
 <p class="text-center text-danger">(*) Campos obligatorios</p>
 <hr />
 <div class="row">
@@ -37,18 +37,26 @@
                 <label asp-for="Email" class="control-label"></label>
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="emailCheckBox">
+                    <label class="custom-control-label" for="emailCheckBox">Utilizar el mismo mail de usuario</label>
+                </div>
             </div>
             <div class="form-group col-12 col-md-6">
                 <b class="text-danger">* </b>
                 <label asp-for="Provincia" class="control-label"></label>
-                <input asp-for="Provincia" class="form-control" />
+                <select class="form-select form-select-search form-select-provinces" id="ProvinciaDrop" style="width: 100%">
+                    <option value=""></option>
+                </select>
                 <span asp-validation-for="Provincia" class="text-danger"></span>
+                <input type="hidden" asp-for="Provincia" />
             </div>
             <div class="form-group col-12 col-md-6">
                 <b class="text-danger">* </b>
                 <label asp-for="Localidad" class="control-label"></label>
-                <input asp-for="Localidad" class="form-control" />
+                <select class="form-select form-select-cities" id="LocalidadDrop" style="width: 100%" disabled></select>
                 <span asp-validation-for="Localidad" class="text-danger"></span>
+                <input type="hidden" asp-for="Localidad" />
             </div>
             <div class="form-group col-12 col-md-6">
                 <label asp-for="FotoPerfil" class="control-label"></label>
@@ -61,6 +69,7 @@
                 </div>
                 <span asp-validation-for="FotoPerfil" class="text-danger"></span>
             </div>
+
             <div class="form-group col-12 text-center text-sm-end mt-3 mb-0">
                 <input type="submit" value="Crear" class="btn btn-primary" />
             </div>
@@ -74,13 +83,113 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-        $('#customFile').on('change', function () {
-            var fileName = $(this).val().replace('C:\\fakepath\\', " ");
-            $(this).next('.custom-file-label').html(fileName);
-        })
-        $('#file-reset').on('click', function () {
-            $('#customFile').val('');
-            $('#customFile').next('.custom-file-label').html('');
+        function capitalizeFirstLetter(mySentence) {
+            const words = mySentence.split(" ");
+            for (let i = 0; i < words.length; i++) {
+                words[i] = words[i][0].toUpperCase() + words[i].substr(1).toLowerCase();
+            }
+            return words.join(" ");
+        }
+
+        async function getProvices() {
+            const response = await fetch("https://apis.datos.gob.ar/georef/api/provincias?campos=nombre&orden=nombre");
+            const data = await response.json();
+            return data;
+        }
+
+        (async function fillProvices() {
+            const result = await getProvices();
+            let dataProvices = $.map(result.provincias, function(prov) {
+                prov.id = prov.id
+                prov.text = prov.nombre;
+                return prov;
+            });
+
+            $('.form-select-provinces').select2({
+                theme: 'bootstrap-5',
+                language: 'es',
+                width: 'resolve',
+                data: dataProvices
+            })
+        }());
+
+        async function getCities(codProvince) {
+            const request = "https://apis.datos.gob.ar/georef/api/localidades?provincia=" + codProvince + "&campos=nombre&orden=nombre&max=5000";
+            const response = await fetch(request);
+            const data = await response.json();
+            return data;
+        }
+
+        async function fillCities(codProvince) {
+            if ($('#Provincia').val() == '') {
+                $('#LocalidadDrop').prop('disabled', true);
+                return;
+            }
+
+            $('#LocalidadDrop').prop('disabled', true);
+
+            $("#LocalidadDrop option").remove();
+
+            const result = await getCities(codProvince);
+
+            let dataCities = $.map(result.localidades, function(prov) {
+                prov.id = prov.id
+                prov.text = capitalizeFirstLetter(prov.nombre);
+                return prov;
+            });
+
+            $('.form-select-cities').select2({
+                theme: 'bootstrap-5',
+                language: 'es',
+                width: 'resolve',
+                data: dataCities
+            });
+
+            $('#LocalidadDrop').prop('disabled', false);
+
+            $('#LocalidadDrop').change();
+        }
+
+        $(document).ready(function() {
+            $('#customFile').change(
+                function() {
+                    var fileName = $(this).val().replace('C:\\fakepath\\', ' ');
+                    $(this).next('.custom-file-label').html(fileName);
+                }
+            );
+
+            $('#file-reset').on('click', function() {
+                $('#customFile').val('');
+                $('#customFile').next('.custom-file-label').html('');
+            });
+
+            $('#emailCheckBox').change(
+                function() {
+                    if (this.checked) {
+                        $('#Email').prop('readonly', true);
+                        $('#Email').prop('disabled', true);
+                        $('#Email').val('@ViewBag.UserEmail');
+                        return;
+                    }
+                    $('#Email').prop('readonly', false);
+                    $('#Email').prop('disabled', false);
+                    $('#Email').val('');
+                }
+            );
+
+            $('#ProvinciaDrop').change(
+                function() {
+                    $("#ProvinciaDrop option[value='']").remove();
+                    $('#Provincia').val(this.value);
+                    fillCities(this.value);
+                }
+            );
+
+            $('#LocalidadDrop').change(
+                function() {
+                    $('#Localidad').val(this.value);
+                }
+            );
         });
     </script>
     }

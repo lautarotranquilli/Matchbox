@@ -47,6 +47,7 @@ namespace Matchbox.Controllers
         // GET: Clientes/Create
         public IActionResult Create()
         {
+            ViewBag.UserEmail = "mathisupino@gmail.com";
             return View();
         }
 
@@ -73,8 +74,8 @@ namespace Matchbox.Controllers
                     Apellido = cliente.Apellido,
                     Telefono = cliente.Telefono,
                     Email = cliente.Email,
-                    Provincia = cliente.Provincia,
-                    Localidad = cliente.Localidad,
+                    IdProvincia = cliente.Provincia,
+                    IdLocalidad = cliente.Localidad,
                     ProfilePath = uniqueFileName,
                     FechaAlta = DateTime.Now.Date,
                     FechaModificacion = DateTime.Now

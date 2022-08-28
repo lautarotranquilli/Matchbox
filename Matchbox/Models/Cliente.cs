@@ -7,8 +7,8 @@
         public string Apellido { get; set; }
         public string Telefono { get; set; }
         public string Email { get; set; }
-        public string Provincia { get; set; }
-        public string Localidad { get; set; }
+        public string IdProvincia { get; set; }
+        public string IdLocalidad { get; set; }
         public string ProfilePath { get; set; }
     }
 }
