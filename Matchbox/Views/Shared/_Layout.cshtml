@@ -9,8 +9,7 @@
     <link rel="stylesheet" href="~/olog-template/dist/main.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    @*<link rel="stylesheet" href="~/lib/jquery-nice-select-1.1.0/css/nice-select.css" />*@
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/lib/slick-1.8.1/slick/slick.css" />
 </head>
@@ -41,11 +40,39 @@
                                 </svg>
                             </div>
                         </div>
-                        <ul class="main-menu d-flex align-items-center">
+                        <ul class="main-menu d-flex align-items-center m-0">
                             <li><a asp-controller="Home" asp-action="Index">Inicio</a></li>
                             <li><a href="">Rubros</a></li>
-                            <li><a asp-controller="Home" asp-action="SignIn">Iniciar sesión</a></li>
-                            <li><a asp-controller="Home" asp-action="SignUp">Registrarse</a></li>
+                            @{
+                                bool registrado = true;
+                                if (registrado)
+                                {
+                                    <li>
+                                        <a href="">
+                                            Personal
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="9.98" height="5.69"
+                                             viewBox="0 0 9.98 5.69">
+                                                <g id="Arrow" transform="translate(0.99 0.99)">
+                                                    <path id="Arrow-2" data-name="Arrow" d="M1474.286,26.4l4,4,4-4"
+                                                      transform="translate(-1474.286 -26.4)" fill="none" stroke="#1a2224"
+                                                      stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4" />
+                                                </g>
+                                            </svg>
+                                        </a>
+                                        <ul class="sub-menu">
+                                            <li><a href="/Cliente/Create">Perfil cliente</a></li>
+                                            <li><a href="">Perfil empresa</a></li>
+                                            <li><a href="">Servicios contratados</a></li>
+                                            <li><a href="">Mi agenda de trabajo</a></li>
+                                        </ul>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li><a asp-controller="Home" asp-action="SignIn">Iniciar sesión</a></li>
+                                    <li><a asp-controller="Home" asp-action="SignUp">Registrarse</a></li>
+                                }
+                            }
                         </ul>
                     </nav>
                 </div>
@@ -132,7 +159,6 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="~/lib/slick-1.8.1/slick/slick.min.js"></script>
-    @*<script src="~/lib/jquery-nice-select-1.1.0/js/jquery.nice-select.min.js"></script>*@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="~/olog-template/dist/main.js"></script>
     <script>

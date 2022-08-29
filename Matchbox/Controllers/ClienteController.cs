@@ -3,8 +3,6 @@ using Matchbox.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,30 +18,6 @@ namespace Matchbox.Controllers
             _context = context;
         }
 
-        // GET: Clientes
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Cliente.ToListAsync());
-        }
-
-        // GET: Clientes/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var cliente = await _context.Cliente
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (cliente == null)
-            {
-                return NotFound();
-            }
-
-            return View(cliente);
-        }
-
         // GET: Clientes/Create
         public IActionResult Create()
         {
@@ -52,8 +26,6 @@ namespace Matchbox.Controllers
         }
 
         // POST: Clientes/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdUsuario,Nombre,Apellido,Telefono,Email,Provincia,Localidad,FotoPerfil")] ClienteViewModel cliente)
@@ -83,9 +55,113 @@ namespace Matchbox.Controllers
 
                 _context.Add(newClient);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Create));
+                return RedirectToAction("Index", "Home", new { area = "" });
             }
             return View(cliente);
+        }
+
+
+        // GET: Clientes/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            Cliente cliente = await _context.Cliente.FindAsync(id);
+            if (cliente == null)
+            {
+                return NotFound();
+            }
+
+            ClienteViewModel clientVM = new ClienteViewModel
+            {
+                Id = cliente.Id,
+                IdUsuario = cliente.IdUsuario,
+                Nombre = cliente.Nombre,
+                Apellido = cliente.Apellido,
+                Telefono = cliente.Telefono,
+                Email = cliente.Email,
+                Provincia = cliente.IdProvincia,
+                Localidad = cliente.IdLocalidad,
+                FotoPerfil = null,
+                FotoPerfilPath = cliente.ProfilePath,
+                FechaAlta = cliente.FechaAlta,
+            };
+            return View(clientVM);
+        }
+
+        // POST: Clientes/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,IdUsuario,Nombre,Apellido,Telefono,Email,Provincia,Localidad,FotoPerfil,FotoPerfilPath,FechaAlta")] ClienteViewModel cliente)
+        {
+            if (id != cliente.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    string uniqueFileName = null;
+
+                    if (cliente.FotoPerfil != null)
+                    {
+                        uniqueFileName = UploadedFile(cliente);
+
+                        if (uniqueFileName == "-1")
+                        {
+                            ModelState.AddModelError(nameof(cliente.FotoPerfil), "No se pudo cargar la imagen, inténtelo nuevamente");
+                            return View(cliente);
+                        }
+
+                        string[] ss = new string[] { Directory.GetCurrentDirectory(), "wwwroot", "img", "user-profile", cliente.FotoPerfilPath };
+                        string path = Path.Combine(ss);
+
+                        if (System.IO.File.Exists(path))
+                            System.IO.File.Delete(path);
+                    }
+
+                    Cliente newClient = new Cliente
+                    {
+                        Id = cliente.Id,
+                        IdUsuario = cliente.IdUsuario,
+                        Nombre = cliente.Nombre,
+                        Apellido = cliente.Apellido,
+                        Telefono = cliente.Telefono,
+                        Email = cliente.Email,
+                        IdProvincia = cliente.Provincia,
+                        IdLocalidad = cliente.Localidad,
+                        ProfilePath = uniqueFileName ?? cliente.FotoPerfilPath,
+                        FechaAlta = cliente.FechaAlta,
+                        FechaModificacion = DateTime.Now
+                    };
+
+                    _context.Update(newClient);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ClienteExists(cliente.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction("Index", "Home", new { area = "" });
+            }
+            return View(cliente);
+        }
+
+        private bool ClienteExists(int id)
+        {
+            return _context.Cliente.Any(e => e.Id == id);
         }
 
         private string UploadedFile(ClienteViewModel cliente)
@@ -110,109 +186,6 @@ namespace Matchbox.Controllers
                 }
             }
             return uniqueFileName;
-        }
-
-        // GET: Clientes/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var cliente = await _context.Cliente.FindAsync(id);
-            if (cliente == null)
-            {
-                return NotFound();
-            }
-            return View(cliente);
-        }
-
-        // POST: Clientes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,IdUsuario,Nombre,Apellido,Telefono,Email,Provincia,Localidad,FechaAlta")] Cliente cliente)
-        {
-            if (id != cliente.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    cliente.FechaModificacion = DateTime.Now;
-                    _context.Update(cliente);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ClienteExists(cliente.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(cliente);
-        }
-
-        // GET: Clientes/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var cliente = await _context.Cliente
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (cliente == null)
-            {
-                return NotFound();
-            }
-
-            return View(cliente);
-        }
-
-        // POST: Clientes/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var cliente = await _context.Cliente.FindAsync(id);
-
-            try
-            {
-                cliente.FechaModificacion = DateTime.Now;
-                cliente.FechaBaja = DateTime.Now.Date;
-                _context.Update(cliente);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ClienteExists(cliente.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool ClienteExists(int id)
-        {
-            return _context.Cliente.Any(e => e.Id == id);
         }
     }
 }

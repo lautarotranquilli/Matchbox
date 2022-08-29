@@ -35,5 +35,6 @@ namespace Matchbox.Models
         [MaxFileSize(5 * 1024 * 1024)]
         [DisplayName("Foto de perfil")]
         public IFormFile FotoPerfil { get; set; }
+        public string FotoPerfilPath { get; set; }
     }
 }

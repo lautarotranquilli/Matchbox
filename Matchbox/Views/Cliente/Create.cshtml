@@ -5,7 +5,7 @@
 }
 
 <div class="text-left">
-    <a asp-action="Index">← Volver</a>
+    <a asp-action="Index" style="text-decoration: none;">← Volver</a>
 </div>
 <h2 class="text-center">Crear perfil de cliente</h2>
 <p class="text-center text-danger">(*) Campos obligatorios</p>
@@ -63,7 +63,7 @@
                 <div class="custom-file">
                     <input asp-for="FotoPerfil" class="custom-file-input" id="customFile" type="file">
                     <label class="custom-file-label" for="customFile"></label>
-                    <button type="button" class="btn btn-outline-danger btn-sm" id="file-reset" style="padding: 0.25rem 0.5rem;font-size: 0.875rem;line-height: 1.5;">
+                    <button type="button" class="btn btn-outline-danger btn-sm mt-2" id="file-reset" style="padding: 0.25rem 0.5rem;font-size: 0.875rem;line-height: 1.5;">
                         <b>X</b> Eliminar
                     </button>
                 </div>
