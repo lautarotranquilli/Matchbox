@@ -25,6 +25,7 @@ namespace Matchbox.Controllers
             return View(await _context.Usuario.ToListAsync());
         }
 
+
         // GET: Usuarios/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -54,13 +55,28 @@ namespace Matchbox.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Nombre,Apellido,Id,FechaAlta,FechaModificacion,FechaBaja")] Usuario usuario)
+        public async Task<IActionResult> Create([Bind("Nombre,Apellido,Id,FechaAlta,FechaModificacion,FechaBaja,Email,Contrasena,ReingresarContrasena")] Usuario usuario)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(usuario);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                Usuario newUser = new Usuario
+                {
+                    Nombre = usuario.Nombre,
+                    Apellido = usuario.Apellido,
+                    Email = usuario.Email,
+                    Contrasena = usuario.Contrasena,
+                    ReingresarContrasena = usuario.ReingresarContrasena,
+                    FechaAlta = DateTime.Now.Date,
+                    FechaModificacion = DateTime.Now.Date
+                };
+
+
+                if (usuario.ReingresarContrasena == usuario.Contrasena)
+                {
+                    _context.Add(newUser);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
             }
             return View(usuario);
         }
@@ -73,11 +89,12 @@ namespace Matchbox.Controllers
                 return NotFound();
             }
 
-            var usuario = await _context.Usuario.FindAsync(id);
+            Usuario usuario = await _context.Usuario.FindAsync(id);
             if (usuario == null)
             {
                 return NotFound();
             }
+
             return View(usuario);
         }
 
@@ -86,7 +103,7 @@ namespace Matchbox.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Nombre,Apellido,Id,FechaAlta,FechaModificacion,FechaBaja")] Usuario usuario)
+        public async Task<IActionResult> Edit(int id, [Bind("Nombre,Apellido,Id,FechaAlta,FechaModificacion,FechaBaja,Email,Contrasena")] Usuario usuario)
         {
             if (id != usuario.Id)
             {
@@ -159,16 +176,18 @@ namespace Matchbox.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SignIn(int? id)
+        public async Task<IActionResult> SignIn(int? id, string email, string contrasena)
         {
+
             if (id == null)
             {
                 return NotFound();
             }
 
             var usuario = await _context.Usuario
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (usuario == null)
+                .FirstOrDefaultAsync(m => m.Email == email);
+
+            if (email == null)
             {
                 return NotFound();
             }
