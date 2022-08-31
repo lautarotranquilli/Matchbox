@@ -65,7 +65,7 @@ namespace Matchbox.Controllers
         }
 
         // GET
-        [Route("Perfiles/Cliente/Editar")]
+        //[Route("Perfiles/Cliente/Editar")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -99,7 +99,7 @@ namespace Matchbox.Controllers
         // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("Perfiles/Cliente/Editar")]
+        //[Route("Perfiles/Cliente/Editar")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,IdUsuario,Nombre,Apellido,Telefono,Email,Provincia,Localidad,FotoPerfil,FotoPerfilPath,FechaAlta")] ClienteViewModel cliente)
         {
             if (id != cliente.Id)
