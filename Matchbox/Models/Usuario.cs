@@ -17,8 +17,7 @@ namespace Matchbox.Models
 
         [Required(ErrorMessage = "Ingrese una contraseña.")]
         [DisplayName("Contraseña")]
-        [MinLength(8, ErrorMessage = "La contraseña debe contener más de 8 caracteres.")]
-        [RegularExpression("^(?=.*'\'d)(?=.*[a-z])(?=.*[A-Z])(?=.*'\'W).*$", ErrorMessage = "La contraseña debe tener al menos una mayúscula, una minúscula, un número y un símbolo especial.")] 
+        [RegularExpression(@"^(?=\w*\d)(?=\w*[A-Z])(?=\w*[a-z])\S{8,16}$", ErrorMessage = "La contraseña debe tener entre 8 y 16 caracteres, al menos un dígito, al menos una minúscula y al menos una mayúscula.")] 
         public string Contrasena { get; set; }
 
         [Required(ErrorMessage = "Repita la contraseña.")]
