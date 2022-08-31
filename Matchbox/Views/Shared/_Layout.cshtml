@@ -1,4 +1,11 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+
+@{
+    bool login = string.IsNullOrWhiteSpace(Context.Session.GetString("_UserID"));
+    bool admin = Context.Session.GetString("_UserAdmin") == "1";
+}
+
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -43,11 +50,8 @@
                         <ul class="main-menu d-flex align-items-center m-0">
                             <li><a asp-controller="Home" asp-action="Index">Inicio</a></li>
                             <li><a href="#">Rubros</a></li>
-                            <li><a asp-controller="Usuarios" asp-action="SignIn">Iniciar sesión</a></li>
-                            <li><a asp-controller="Usuarios" asp-action="Create">Registrarse</a></li>
                             @{
-                                bool registrado = true;
-                                if (registrado)
+                                if (!login)
                                 {
                                     <li>
                                         <a>
@@ -68,11 +72,16 @@
                                             <li><a href="#">Mi agenda de trabajo</a></li>
                                         </ul>
                                     </li>
+                                    if (admin)
+                                    {
+                                        <li><a href="#">Admin</a></li>
+                                    }
+                                    <li><a asp-controller="Usuarios" asp-action="LogOff">Cerrar sesión</a></li>
                                 }
                                 else
                                 {
-                                    <li><a asp-controller="Home" asp-action="SignIn">Iniciar sesión</a></li>
-                                    <li><a asp-controller="Home" asp-action="SignUp">Registrarse</a></li>
+                                    <li><a asp-controller="Usuarios" asp-action="SignIn">Iniciar sesión</a></li>
+                                    <li><a asp-controller="Usuarios" asp-action="Create">Registrarse</a></li>
                                 }
                             }
                         </ul>
@@ -107,17 +116,18 @@
                             <li><a asp-controller="Usuarios" asp-action="SignIn">Iniciar sesión</a></li>
                             <li><a asp-controller="Usuarios" asp-action="Create">Registrarse</a></li>
                             @{
-                                if (registrado)
+                                if (!login)
                                 {
                                     <li><a asp-controller="Cliente" asp-action="Create">Perfil cliente</a></li>
                                     <li><a href="#">Perfil empresa</a></li>
                                     <li><a href="#">Servicios contratados</a></li>
                                     <li><a href="#">Mi agenda de trabajo</a></li>
+                                    <li><a asp-controller="Usuarios" asp-action="LogOff">Cerrar sesión</a></li>
                                 }
                                 else
                                 {
-                                    <li><a asp-controller="Home" asp-action="SignIn">Iniciar sesión</a></li>
-                                    <li><a asp-controller="Home" asp-action="SignUp">Registrarse</a></li>
+                                    <li><a asp-controller="Usuarios" asp-action="SignIn">Iniciar sesión</a></li>
+                                    <li><a asp-controller="Usuarios" asp-action="Create">Registrarse</a></li>
                                 }
                             }
                         </ul>

@@ -31,6 +31,8 @@ namespace Matchbox
                     options.UseSqlServer(Configuration.GetConnectionString("MatchboxDBContext")));
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
+
+            services.AddSession();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,6 +54,8 @@ namespace Matchbox
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {

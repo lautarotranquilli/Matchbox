@@ -1,18 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Matchbox.Data;
+﻿using Matchbox.Data;
 using Matchbox.Models;
+using Matchbox.ViewModels;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Threading.Tasks;
 
 namespace Matchbox.Controllers
 {
     public class UsuariosController : Controller
     {
         private readonly MatchboxDBContext _context;
+
+        private const string SessionUserID = "_UserID";
+        private const string SessionUserAdmin = "_UserAdmin";
+        private const string SessionUserEmail = "_UserEmail";
 
         public UsuariosController(MatchboxDBContext context)
         {
@@ -69,7 +72,7 @@ namespace Matchbox.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Ingreso")]
-        public async Task<IActionResult> SignIn([Bind("Email,Contrasena")] Usuario usuario)
+        public async Task<IActionResult> SignIn([Bind("Email,Contrasena")] LoginUserViewModel usuario)
         {
             if (ModelState.IsValid)
             {
@@ -82,9 +85,20 @@ namespace Matchbox.Controllers
                     return View(usuario);
                 }
 
+                HttpContext.Session.SetString(SessionUserID, user.Id.ToString());
+                HttpContext.Session.SetString(SessionUserAdmin, "1");
+                HttpContext.Session.SetString(SessionUserEmail, user.Email.ToString());
+
                 return RedirectToAction("Index", "Home", new { area = "" });
             }
             return View(usuario);
+        }
+
+        public ActionResult LogOff()
+        {
+            HttpContext.Session.Clear();
+
+            return RedirectToAction("Index", "Home", new { area = "" });
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿@model Matchbox.Models.Usuario
+﻿@model Matchbox.ViewModels.LoginUserViewModel
 
 @{
     ViewData["Title"] = "Iniciar sesión";
@@ -18,24 +18,19 @@
                                 <div class="text-center text-danger mb-2">@ViewBag.GlobalError</div>
                             }
                         }
-                        <div class="form__div">
-                            <input asp-for="Email" type="email" class="form__input" placeholder=" ">
-                            <label asp-for="Email" for="" class="form__label">Email</label>
+                        <div class="form-group">
+                            <label asp-for="Email" class="control-label"></label>
+                            <input asp-for="Email" class="form-control" />
                             <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
-                        <div class="form__div mb-0">
-                            <input asp-for="Contrasena" type="password" class="form__input" placeholder=" ">
-                            <label asp-for="Contrasena" class="form__label">Contraseña</label>
+                        <div class="form-group">
+                            <label asp-for="Contrasena" class="control-label"></label>
+                            <input asp-for="Contrasena" type="password" class="form-control" />
                             <span asp-validation-for="Contrasena" class="text-danger"></span>
-                        </div>
-                        <div class="password-info d-flex align-items-center justify-content-between flex-wrap">
-                            <div class="password-info-left">
-                                <input type="checkbox" id="showpass" class="mb-0">
-                                <label for="showpass" class="mb-0">Mostrar contraseña</label>
+                            <div>
+                                <input type="checkbox" id="showPass">
+                                <label for="showPass">Mostrar contraseña</label>
                             </div>
-                            @*<div class="password-info-right">
-                            <a href="forget-password.html">Olvidé mi contraseña</a>
-                            </div>*@
                         </div>
                         <input type="submit" value="Iniciar Sesión" class="btn btn-primary" />
                     </form>
