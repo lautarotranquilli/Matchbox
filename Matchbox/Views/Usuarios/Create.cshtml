@@ -1,7 +1,7 @@
 ﻿@model Matchbox.Models.Usuario
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Registrar Usuario";
 }
 
 <h1>Registrar Usuario</h1>
@@ -29,22 +29,16 @@
             <div class="form-group">
                 <label asp-for="Contrasena" class="control-label"></label>
                 <input asp-for="Contrasena" type="password" class="form-control" />
+                <input type="checkbox" id="showPass">
+                <label for="showPass">Mostrar contraseña</label>
                 <span asp-validation-for="Contrasena" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="ReingresarContrasena" class="control-label"></label>
                 <input asp-for="ReingresarContrasena" type="password" class="form-control" />
+                <input type="checkbox" id="showPassBis">
+                <label for="showPassBis">Mostrar contraseña</label>
                 <span asp-validation-for="ReingresarContrasena" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FechaAlta" class="control-label"></label>
-                <input asp-for="FechaAlta" class="form-control" />
-                <span asp-validation-for="FechaAlta" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FechaModificacion" class="control-label"></label>
-                <input asp-for="FechaModificacion" class="form-control" />
-                <span asp-validation-for="FechaModificacion" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Registrar" class="btn btn-primary" />
@@ -53,10 +47,28 @@
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Lista de usuarios</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function() {
+            $('#showPass').on('click', function() {
+                var passInput = $("#Contrasena");
+                if (passInput.attr('type') === 'password') {
+                    passInput.attr('type', 'text');
+                } else {
+                    passInput.attr('type', 'password');
+                }
+            })
+            $('#showPassBis').on('click', function() {
+                var passInput = $("#ReingresarContrasena");
+                if (passInput.attr('type') === 'password') {
+                    passInput.attr('type', 'text');
+                } else {
+                    passInput.attr('type', 'password');
+                }
+            })
+        })
+    </script>
 }

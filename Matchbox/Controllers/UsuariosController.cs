@@ -55,10 +55,16 @@ namespace Matchbox.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Nombre,Apellido,Id,FechaAlta,FechaModificacion,FechaBaja,Email,Contrasena,ReingresarContrasena")] Usuario usuario)
+        public async Task<IActionResult> Create([Bind("Nombre,Apellido,Email,Contrasena,ReingresarContrasena")] Usuario usuario)
         {
             if (ModelState.IsValid)
             {
+                if (usuario.ReingresarContrasena != usuario.Contrasena)
+                {
+                    ModelState.AddModelError(nameof(usuario.ReingresarContrasena), "Las contraseñas no coinciden.");
+                    return View(usuario);
+                }
+
                 Usuario newUser = new Usuario
                 {
                     Nombre = usuario.Nombre,
@@ -67,16 +73,12 @@ namespace Matchbox.Controllers
                     Contrasena = usuario.Contrasena,
                     ReingresarContrasena = usuario.ReingresarContrasena,
                     FechaAlta = DateTime.Now.Date,
-                    FechaModificacion = DateTime.Now.Date
+                    FechaModificacion = DateTime.Now
                 };
 
-
-                if (usuario.ReingresarContrasena == usuario.Contrasena)
-                {
-                    _context.Add(newUser);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
+                _context.Add(newUser);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Index", "Home", new { area = "" });
             }
             return View(usuario);
         }
@@ -176,22 +178,21 @@ namespace Matchbox.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SignIn(int? id, string email, string contrasena)
+        public async Task<IActionResult> SignIn([Bind("Email,Contrasena")] Usuario usuario)
         {
-
-            if (id == null)
+            if (ModelState.IsValid)
             {
-                return NotFound();
+                var user = await _context.Usuario
+                    .FirstOrDefaultAsync(m => m.Email == usuario.Email && m.Contrasena == usuario.Contrasena);
+
+                if (user == null)
+                {
+                    ViewBag.GlobalError = "Usuario no encontrado. Verifique el email y la contraseña ingresados.";
+                    return View(usuario);
+                }
+
+                return RedirectToAction("Index", "Home", new { area = "" });
             }
-
-            var usuario = await _context.Usuario
-                .FirstOrDefaultAsync(m => m.Email == email);
-
-            if (email == null)
-            {
-                return NotFound();
-            }
-
             return View(usuario);
         }
     }

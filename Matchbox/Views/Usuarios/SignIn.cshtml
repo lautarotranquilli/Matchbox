@@ -12,6 +12,12 @@
                 <div class="account-sign-in">
                     <h5 class="text-center">Iniciar sesión</h5>
                     <form asp-action="SignIn">
+                        @{
+                            if (ViewBag.GlobalError != null)
+                            {
+                                <div style="color: red;">@ViewBag.GlobalError</div>
+                            }
+                        }
                         <div class="form__div">
                             <input asp-for="Email" type="email" class="form__input" placeholder=" ">
                             <label asp-for="Email" for="" class="form__label">Email</label>
@@ -27,11 +33,11 @@
                                 <input type="checkbox" id="showpass" class="mb-0">
                                 <label for="showpass" class="mb-0">Mostrar contraseña</label>
                             </div>
-                            <div class="password-info-right">
-                                <a href="forget-password.html">Olvidé mi contraseña</a>
-                            </div>
+                            @*<div class="password-info-right">
+                            <a href="forget-password.html">Olvidé mi contraseña</a>
+                            </div>*@
                         </div>
-                        <input type="submit" value="Iniciar Sesión" class="btn btn-primary"/>
+                        <input type="submit" value="Iniciar Sesión" class="btn btn-primary" />
                     </form>
                     <!--
                     <div class="social-signing">
@@ -85,5 +91,16 @@
 @section Scripts {
     <script type="text/javascript">
         $('main').css("background-color", "#EFEFEF")
+
+        $(document).ready(function() {
+            $('#showpass').on('click', function() {
+                var passInput = $("#Contrasena");
+                if (passInput.attr('type') === 'password') {
+                    passInput.attr('type', 'text');
+                } else {
+                    passInput.attr('type', 'password');
+                }
+            })
+        })
     </script>
 }
