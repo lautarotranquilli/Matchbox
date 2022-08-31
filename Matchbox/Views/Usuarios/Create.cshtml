@@ -1,0 +1,80 @@
+﻿@model Matchbox.Models.Usuario
+
+@{
+    ViewData["Title"] = "Registro";
+}
+
+<section class="account-sign">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-12">
+                <div class="account-sign-in">
+                    <h5 class="text-center">Registro</h5>
+                    <form asp-action="Create">
+                        <div class="form-group">
+                            <label asp-for="Nombre" class="control-label"></label>
+                            <input asp-for="Nombre" class="form-control" />
+                            <span asp-validation-for="Nombre" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Apellido" class="control-label"></label>
+                            <input asp-for="Apellido" class="form-control" />
+                            <span asp-validation-for="Apellido" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Email" class="control-label"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Contrasena" class="control-label"></label>
+                            <input asp-for="Contrasena" type="password" class="form-control" />
+                            <span asp-validation-for="Contrasena" class="text-danger"></span>
+                            <div>
+                                <input type="checkbox" id="showPass">
+                                <label for="showPass">Mostrar contraseña</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ReingresarContrasena" class="control-label"></label>
+                            <input asp-for="ReingresarContrasena" type="password" class="form-control" />
+                            <span asp-validation-for="ReingresarContrasena" class="text-danger"></span>
+                            <div>
+                                <input type="checkbox" id="showPassBis">
+                                <label for="showPassBis">Mostrar contraseña</label>
+                            </div>
+                        </div>
+                        <input type="submit" value="Registrarse" class="btn btn-primary" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script type="text/javascript">
+        $('main').css("background-color", "#EFEFEF")
+        $('main').addClass('container-fluid')
+        $('main').removeClass('container')
+
+        $(document).ready(function() {
+            $('#showPass').on('click', function() {
+                var passInput = $("#Contrasena");
+                if (passInput.attr('type') === 'password') {
+                    passInput.attr('type', 'text');
+                } else {
+                    passInput.attr('type', 'password');
+                }
+            })
+            $('#showPassBis').on('click', function() {
+                var passInput = $("#ReingresarContrasena");
+                if (passInput.attr('type') === 'password') {
+                    passInput.attr('type', 'text');
+                } else {
+                    passInput.attr('type', 'password');
+                }
+            })
+        })
+    </script>
+}

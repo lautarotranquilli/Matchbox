@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Matchbox.Data;
+﻿using Matchbox.Data;
 using Matchbox.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Matchbox.Controllers
 {
@@ -19,53 +20,52 @@ namespace Matchbox.Controllers
             _context = context;
         }
 
-        // GET: Clientes
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Cliente.ToListAsync());
-        }
-
-        // GET: Clientes/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var cliente = await _context.Cliente
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (cliente == null)
-            {
-                return NotFound();
-            }
-
-            return View(cliente);
-        }
-
-        // GET: Clientes/Create
+        // GET
+        [Route("Perfiles/Cliente/Crear")]
         public IActionResult Create()
         {
+            ViewBag.UserEmail = Encoding.Default.GetString(HttpContext.Session.Get("_UserEmail"));
             return View();
         }
 
-        // POST: Clientes/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdUsuario,Nombre,Id,FechaAlta,FechaModificacion,FechaBaja")] Cliente cliente)
+        [Route("Perfiles/Cliente/Crear")]
+        public async Task<IActionResult> Create([Bind("IdUsuario,Nombre,Apellido,Telefono,Email,Provincia,Localidad,FotoPerfil")] ClienteViewModel cliente)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(cliente);
+                string uniqueFileName = UploadedFile(cliente);
+                if (uniqueFileName == "-1")
+                {
+                    ModelState.AddModelError(nameof(cliente.FotoPerfil), "No se pudo cargar la imagen, inténtelo nuevamente");
+                    return View(cliente);
+                }
+
+                Cliente newClient = new Cliente
+                {
+                    IdUsuario = Convert.ToInt32(Encoding.Default.GetString(HttpContext.Session.Get("_UserID"))),
+                    Nombre = cliente.Nombre,
+                    Apellido = cliente.Apellido,
+                    Telefono = cliente.Telefono,
+                    Email = cliente.Email,
+                    IdProvincia = cliente.Provincia,
+                    IdLocalidad = cliente.Localidad,
+                    ProfilePath = uniqueFileName,
+                    FechaAlta = DateTime.Now.Date,
+                    FechaModificacion = DateTime.Now
+                };
+
+                _context.Add(newClient);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Home", new { area = "" });
             }
             return View(cliente);
         }
 
-        // GET: Clientes/Edit/5
+        // GET
+        [Route("Perfiles/Cliente/Editar")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -73,20 +73,34 @@ namespace Matchbox.Controllers
                 return NotFound();
             }
 
-            var cliente = await _context.Cliente.FindAsync(id);
+            Cliente cliente = await _context.Cliente.FindAsync(id);
             if (cliente == null)
             {
                 return NotFound();
             }
-            return View(cliente);
+
+            ClienteViewModel clientVM = new ClienteViewModel
+            {
+                Id = cliente.Id,
+                IdUsuario = cliente.IdUsuario,
+                Nombre = cliente.Nombre,
+                Apellido = cliente.Apellido,
+                Telefono = cliente.Telefono,
+                Email = cliente.Email,
+                Provincia = cliente.IdProvincia,
+                Localidad = cliente.IdLocalidad,
+                FotoPerfil = null,
+                FotoPerfilPath = cliente.ProfilePath,
+                FechaAlta = cliente.FechaAlta,
+            };
+            return View(clientVM);
         }
 
-        // POST: Clientes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdUsuario,Nombre,Id,FechaAlta,FechaModificacion,FechaBaja")] Cliente cliente)
+        [Route("Perfiles/Cliente/Editar")]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,IdUsuario,Nombre,Apellido,Telefono,Email,Provincia,Localidad,FotoPerfil,FotoPerfilPath,FechaAlta")] ClienteViewModel cliente)
         {
             if (id != cliente.Id)
             {
@@ -97,7 +111,41 @@ namespace Matchbox.Controllers
             {
                 try
                 {
-                    _context.Update(cliente);
+                    string uniqueFileName = null;
+
+                    if (cliente.FotoPerfil != null)
+                    {
+                        uniqueFileName = UploadedFile(cliente);
+
+                        if (uniqueFileName == "-1")
+                        {
+                            ModelState.AddModelError(nameof(cliente.FotoPerfil), "No se pudo cargar la imagen, inténtelo nuevamente");
+                            return View(cliente);
+                        }
+
+                        string[] ss = new string[] { Directory.GetCurrentDirectory(), "wwwroot", "img", "user-profile", cliente.FotoPerfilPath };
+                        string path = Path.Combine(ss);
+
+                        if (System.IO.File.Exists(path))
+                            System.IO.File.Delete(path);
+                    }
+
+                    Cliente newClient = new Cliente
+                    {
+                        Id = cliente.Id,
+                        IdUsuario = cliente.IdUsuario,
+                        Nombre = cliente.Nombre,
+                        Apellido = cliente.Apellido,
+                        Telefono = cliente.Telefono,
+                        Email = cliente.Email,
+                        IdProvincia = cliente.Provincia,
+                        IdLocalidad = cliente.Localidad,
+                        ProfilePath = uniqueFileName ?? cliente.FotoPerfilPath,
+                        FechaAlta = cliente.FechaAlta,
+                        FechaModificacion = DateTime.Now
+                    };
+
+                    _context.Update(newClient);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -111,43 +159,38 @@ namespace Matchbox.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Home", new { area = "" });
             }
             return View(cliente);
-        }
-
-        // GET: Clientes/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var cliente = await _context.Cliente
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (cliente == null)
-            {
-                return NotFound();
-            }
-
-            return View(cliente);
-        }
-
-        // POST: Clientes/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var cliente = await _context.Cliente.FindAsync(id);
-            _context.Cliente.Remove(cliente);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
         private bool ClienteExists(int id)
         {
             return _context.Cliente.Any(e => e.Id == id);
+        }
+
+        private string UploadedFile(ClienteViewModel cliente)
+        {
+            string uniqueFileName = null;
+
+            if (cliente.FotoPerfil != null)
+            {
+                try
+                {
+                    string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "user-profile");
+                    uniqueFileName = Guid.NewGuid().ToString() + "_" + cliente.FotoPerfil.FileName;
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        cliente.FotoPerfil.CopyTo(fileStream);
+                    }
+                }
+                catch (Exception)
+                {
+                    uniqueFileName = "-1";
+                }
+            }
+            return uniqueFileName;
         }
     }
 }
