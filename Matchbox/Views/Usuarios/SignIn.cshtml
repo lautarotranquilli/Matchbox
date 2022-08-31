@@ -1,4 +1,6 @@
-﻿@{
+﻿@model Matchbox.Models.Usuario
+
+@{
     ViewData["Title"] = "Iniciar sesión";
 }
 
@@ -9,26 +11,35 @@
             <div class="col-lg-6 col-md-12">
                 <div class="account-sign-in">
                     <h5 class="text-center">Iniciar sesión</h5>
-                    <form action="#">
+                    <form asp-action="SignIn">
+                        @{
+                            if (ViewBag.GlobalError != null)
+                            {
+                                <div style="color: red;">@ViewBag.GlobalError</div>
+                            }
+                        }
                         <div class="form__div">
-                            <input type="email" class="form__input" placeholder=" ">
-                            <label for="" class="form__label">Email</label>
+                            <input asp-for="Email" type="email" class="form__input" placeholder=" ">
+                            <label asp-for="Email" for="" class="form__label">Email</label>
+                            <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
                         <div class="form__div mb-0">
-                            <input type="password" class="form__input" placeholder=" ">
-                            <label for="" class="form__label">Contraseña</label>
+                            <input asp-for="Contrasena" type="password" class="form__input" placeholder=" ">
+                            <label asp-for="Contrasena" class="form__label">Contraseña</label>
+                            <span asp-validation-for="Contrasena" class="text-danger"></span>
                         </div>
                         <div class="password-info d-flex align-items-center justify-content-between flex-wrap">
                             <div class="password-info-left">
                                 <input type="checkbox" id="showpass" class="mb-0">
                                 <label for="showpass" class="mb-0">Mostrar contraseña</label>
                             </div>
-                            <div class="password-info-right">
-                                <a href="forget-password.html">Olvidé mi contraseña</a>
-                            </div>
+                            @*<div class="password-info-right">
+                            <a href="forget-password.html">Olvidé mi contraseña</a>
+                            </div>*@
                         </div>
-                        <a href="" class="btn bg-primary">Iniciar sesión</a>
+                        <input type="submit" value="Iniciar Sesión" class="btn btn-primary" />
                     </form>
+                    <!--
                     <div class="social-signing">
                         <p class="text-center">o iniciar sesión con</p>
                         <div class="social-signing-link">
@@ -70,6 +81,7 @@
                             </a>
                         </div>
                     </div>
+                    -->
                 </div>
             </div>
         </div>
@@ -77,7 +89,18 @@
 </section>
 
 @section Scripts {
-<script type="text/javascript">
-    $('main').css("background-color", "#EFEFEF")
-</script>
+    <script type="text/javascript">
+        $('main').css("background-color", "#EFEFEF")
+
+        $(document).ready(function() {
+            $('#showpass').on('click', function() {
+                var passInput = $("#Contrasena");
+                if (passInput.attr('type') === 'password') {
+                    passInput.attr('type', 'text');
+                } else {
+                    passInput.attr('type', 'password');
+                }
+            })
+        })
+    </script>
 }
