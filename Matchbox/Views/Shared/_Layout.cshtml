@@ -42,13 +42,15 @@
                         </div>
                         <ul class="main-menu d-flex align-items-center m-0">
                             <li><a asp-controller="Home" asp-action="Index">Inicio</a></li>
-                            <li><a href="">Rubros</a></li>
+                            <li><a href="#">Rubros</a></li>
+                            <li><a asp-controller="Usuarios" asp-action="SignIn">Iniciar sesión</a></li>
+                            <li><a asp-controller="Usuarios" asp-action="Create">Registrarse</a></li>
                             @{
                                 bool registrado = true;
                                 if (registrado)
                                 {
                                     <li>
-                                        <a href="">
+                                        <a>
                                             Personal
                                             <svg xmlns="http://www.w3.org/2000/svg" width="9.98" height="5.69"
                                              viewBox="0 0 9.98 5.69">
@@ -60,10 +62,10 @@
                                             </svg>
                                         </a>
                                         <ul class="sub-menu">
-                                            <li><a href="/Cliente/Create">Perfil cliente</a></li>
-                                            <li><a href="">Perfil empresa</a></li>
-                                            <li><a href="">Servicios contratados</a></li>
-                                            <li><a href="">Mi agenda de trabajo</a></li>
+                                            <li><a asp-controller="Cliente" asp-action="Create">Perfil cliente</a></li>
+                                            <li><a href="#">Perfil empresa</a></li>
+                                            <li><a href="#">Servicios contratados</a></li>
+                                            <li><a href="#">Mi agenda de trabajo</a></li>
                                         </ul>
                                     </li>
                                 }
@@ -101,9 +103,23 @@
                         </div>
                         <ul>
                             <li><a asp-controller="Home" asp-action="Index">Inicio</a></li>
-                            <li><a href="">Rubros</a></li>
-                            <li><a asp-controller="Home" asp-action="SignIn">Iniciar sesión</a></li>
-                            <li><a asp-controller="Home" asp-action="SignUp">Registrarse</a></li>
+                            <li><a href="#">Rubros</a></li>
+                            <li><a asp-controller="Usuarios" asp-action="SignIn">Iniciar sesión</a></li>
+                            <li><a asp-controller="Usuarios" asp-action="Create">Registrarse</a></li>
+                            @{
+                                if (registrado)
+                                {
+                                    <li><a asp-controller="Cliente" asp-action="Create">Perfil cliente</a></li>
+                                    <li><a href="#">Perfil empresa</a></li>
+                                    <li><a href="#">Servicios contratados</a></li>
+                                    <li><a href="#">Mi agenda de trabajo</a></li>
+                                }
+                                else
+                                {
+                                    <li><a asp-controller="Home" asp-action="SignIn">Iniciar sesión</a></li>
+                                    <li><a asp-controller="Home" asp-action="SignUp">Registrarse</a></li>
+                                }
+                            }
                         </ul>
                     </div>
                     <div class="mobile-nav d-flex align-items-center justify-content-between">

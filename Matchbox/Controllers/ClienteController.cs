@@ -18,16 +18,18 @@ namespace Matchbox.Controllers
             _context = context;
         }
 
-        // GET: Clientes/Create
+        // GET
+        [Route("Perfiles/Cliente/Crear")]
         public IActionResult Create()
         {
             ViewBag.UserEmail = "mathisupino@gmail.com";
             return View();
         }
 
-        // POST: Clientes/Create
+        // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Route("Perfiles/Cliente/Crear")]
         public async Task<IActionResult> Create([Bind("IdUsuario,Nombre,Apellido,Telefono,Email,Provincia,Localidad,FotoPerfil")] ClienteViewModel cliente)
         {
             if (ModelState.IsValid)
@@ -61,7 +63,8 @@ namespace Matchbox.Controllers
         }
 
 
-        // GET: Clientes/Edit/5
+        // GET
+        [Route("Perfiles/Cliente/Editar")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -92,9 +95,10 @@ namespace Matchbox.Controllers
             return View(clientVM);
         }
 
-        // POST: Clientes/Edit/5
+        // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Route("Perfiles/Cliente/Editar")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,IdUsuario,Nombre,Apellido,Telefono,Email,Provincia,Localidad,FotoPerfil,FotoPerfilPath,FechaAlta")] ClienteViewModel cliente)
         {
             if (id != cliente.Id)

@@ -15,7 +15,7 @@
                         @{
                             if (ViewBag.GlobalError != null)
                             {
-                                <div style="color: red;">@ViewBag.GlobalError</div>
+                                <div class="text-center text-danger mb-2">@ViewBag.GlobalError</div>
                             }
                         }
                         <div class="form__div">
@@ -91,6 +91,8 @@
 @section Scripts {
     <script type="text/javascript">
         $('main').css("background-color", "#EFEFEF")
+        $('main').addClass('container-fluid')
+        $('main').removeClass('container')
 
         $(document).ready(function() {
             $('#showpass').on('click', function() {

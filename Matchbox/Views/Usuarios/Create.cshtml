@@ -1,57 +1,63 @@
 ﻿@model Matchbox.Models.Usuario
 
 @{
-    ViewData["Title"] = "Registrar Usuario";
+    ViewData["Title"] = "Registro";
 }
 
-<h1>Registrar Usuario</h1>
-
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Nombre" class="control-label"></label>
-                <input asp-for="Nombre" class="form-control" />
-                <span asp-validation-for="Nombre" class="text-danger"></span>
+<section class="account-sign">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-12">
+                <div class="account-sign-in">
+                    <h5 class="text-center">Registro</h5>
+                    <form asp-action="Create">
+                        <div class="form-group">
+                            <label asp-for="Nombre" class="control-label"></label>
+                            <input asp-for="Nombre" class="form-control" />
+                            <span asp-validation-for="Nombre" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Apellido" class="control-label"></label>
+                            <input asp-for="Apellido" class="form-control" />
+                            <span asp-validation-for="Apellido" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Email" class="control-label"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Contrasena" class="control-label"></label>
+                            <input asp-for="Contrasena" type="password" class="form-control" />
+                            <span asp-validation-for="Contrasena" class="text-danger"></span>
+                            <div>
+                                <input type="checkbox" id="showPass">
+                                <label for="showPass">Mostrar contraseña</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ReingresarContrasena" class="control-label"></label>
+                            <input asp-for="ReingresarContrasena" type="password" class="form-control" />
+                            <span asp-validation-for="ReingresarContrasena" class="text-danger"></span>
+                            <div>
+                                <input type="checkbox" id="showPassBis">
+                                <label for="showPassBis">Mostrar contraseña</label>
+                            </div>
+                        </div>
+                        <input type="submit" value="Registrarse" class="btn btn-primary" />
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Apellido" class="control-label"></label>
-                <input asp-for="Apellido" class="form-control" />
-                <span asp-validation-for="Apellido" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Contrasena" class="control-label"></label>
-                <input asp-for="Contrasena" type="password" class="form-control" />
-                <input type="checkbox" id="showPass">
-                <label for="showPass">Mostrar contraseña</label>
-                <span asp-validation-for="Contrasena" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ReingresarContrasena" class="control-label"></label>
-                <input asp-for="ReingresarContrasena" type="password" class="form-control" />
-                <input type="checkbox" id="showPassBis">
-                <label for="showPassBis">Mostrar contraseña</label>
-                <span asp-validation-for="ReingresarContrasena" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Registrar" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
+</section>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-    <script>
+    <script type="text/javascript">
+        $('main').css("background-color", "#EFEFEF")
+        $('main').addClass('container-fluid')
+        $('main').removeClass('container')
+
         $(document).ready(function() {
             $('#showPass').on('click', function() {
                 var passInput = $("#Contrasena");
