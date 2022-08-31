@@ -4,7 +4,6 @@ using Matchbox.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading.Tasks;
 
@@ -15,7 +14,8 @@ namespace Matchbox.Controllers
         private readonly MatchboxDBContext _context;
 
         private const string SessionUserID = "_UserID";
-        private const string SessionRolAdmin = "_RolAdmin";
+        private const string SessionUserAdmin = "_UserAdmin";
+        private const string SessionUserEmail = "_UserEmail";
 
         public UsuariosController(MatchboxDBContext context)
         {
@@ -86,7 +86,8 @@ namespace Matchbox.Controllers
                 }
 
                 HttpContext.Session.SetString(SessionUserID, user.Id.ToString());
-                HttpContext.Session.SetString(SessionRolAdmin, "1");
+                HttpContext.Session.SetString(SessionUserAdmin, "1");
+                HttpContext.Session.SetString(SessionUserEmail, user.Email.ToString());
 
                 return RedirectToAction("Index", "Home", new { area = "" });
             }

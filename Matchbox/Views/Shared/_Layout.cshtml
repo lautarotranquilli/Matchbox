@@ -2,7 +2,7 @@
 
 @{
     bool login = string.IsNullOrWhiteSpace(Context.Session.GetString("_UserID"));
-    bool admin = Context.Session.GetString("_RolAdmin") == "1";
+    bool admin = Context.Session.GetString("_UserAdmin") == "1";
 }
 
 <!DOCTYPE html>

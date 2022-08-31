@@ -1,10 +1,12 @@
 ﻿using Matchbox.Data;
 using Matchbox.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Matchbox.Controllers
@@ -22,7 +24,7 @@ namespace Matchbox.Controllers
         [Route("Perfiles/Cliente/Crear")]
         public IActionResult Create()
         {
-            ViewBag.UserEmail = "mathisupino@gmail.com";
+            ViewBag.UserEmail = Encoding.Default.GetString(HttpContext.Session.Get("_UserEmail"));
             return View();
         }
 
@@ -43,7 +45,7 @@ namespace Matchbox.Controllers
 
                 Cliente newClient = new Cliente
                 {
-                    IdUsuario = 2,
+                    IdUsuario = Convert.ToInt32(Encoding.Default.GetString(HttpContext.Session.Get("_UserID"))),
                     Nombre = cliente.Nombre,
                     Apellido = cliente.Apellido,
                     Telefono = cliente.Telefono,
@@ -61,7 +63,6 @@ namespace Matchbox.Controllers
             }
             return View(cliente);
         }
-
 
         // GET
         [Route("Perfiles/Cliente/Editar")]
