@@ -20,12 +20,12 @@
                         }
                         <div class="form-group">
                             <label asp-for="Email" class="control-label"></label>
-                            <input asp-for="Email" class="form-control" />
+                            <input asp-for="Email" class="form-control" autocomplete="off" />
                             <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="Contrasena" class="control-label"></label>
-                            <input asp-for="Contrasena" type="password" class="form-control" />
+                            <input asp-for="Contrasena" type="password" class="form-control" autocomplete="off" />
                             <span asp-validation-for="Contrasena" class="text-danger"></span>
                             <div>
                                 <input type="checkbox" id="showPass">
@@ -90,7 +90,7 @@
         $('main').removeClass('container')
 
         $(document).ready(function() {
-            $('#showpass').on('click', function() {
+            $('#showPass').on('click', function () {
                 var passInput = $("#Contrasena");
                 if (passInput.attr('type') === 'password') {
                     passInput.attr('type', 'text');
