@@ -57,8 +57,10 @@
                 <span asp-validation-for="Localidad" class="text-danger"></span>
                 <input type="hidden" asp-for="Localidad" />
             </div>
+
             <div class="form-group col-12">
                 <label asp-for="FotoPerfil" class="control-label"></label>
+
                 <div class="form-group col-12 col-md-6 p-0" id="profile-area-empty" style="display: none;">
                     <div class="custom-file">
                         <input asp-for="FotoPerfil" class="custom-file-input" id="customFile" type="file">
@@ -69,20 +71,27 @@
                     </div>
                     <span asp-validation-for="FotoPerfil" class="text-danger"></span>
                 </div>
-                <div class="row" id="profile-area-saved" style="display: none;">
-                    <div class="col-12 col-md-2">
-                        <div class="ratio ratio-1x1">
-                            <img src="~/img/user-profile/@Model.FotoPerfilPath" class="img-thumbnail" style="object-fit: cover;s">
+                @if (!string.IsNullOrEmpty(Model.FotoPerfilPath))
+                {
+                    <div class="row" id="profile-area-saved" style="display: none;">
+                        <div class="col-12 col-md-2">
+                            <div class="ratio ratio-1x1">
+                                <img src="~/img/user-profile/@Model.FotoPerfilPath" class="img-thumbnail" style="object-fit: cover;">
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-10">
+                            <div class="mb-2">
+                                <button type="button" class="btn btn-outline-danger btn-sm" id="picture-reset">
+                                    <b>X</b> Eliminar foto
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-12 col-md-10">
-                        <div class="mb-2">
-                            <button type="button" class="btn btn-outline-danger btn-sm" id="picture-reset"><b>X</b> Eliminar foto</button>
-                        </div>
-                    </div>
-                    <input type="hidden" asp-for="FotoPerfilPath" />
-                </div>
+                }
+                <input type="hidden" asp-for="FotoPerfilPath" />
+                <input type="hidden" asp-for="FotoPerfilPath_Old" />
             </div>
+
             <div class="form-group col-12 mt-3 mb-0 text-center">
                 <a asp-action="Index" class="btn btn-secondary" role="button">Descartar</a>
                 <input type="submit" value="Guardar" class="btn btn-primary" />
@@ -105,6 +114,7 @@
             return words.join(" ");
         }
 
+        // FUNCIONES DE PROVINCIA/CIUDAD
         async function getProvices() {
             const response = await fetch("https://apis.datos.gob.ar/georef/api/provincias?campos=nombre&orden=nombre");
             const data = await response.json();
@@ -113,7 +123,7 @@
 
         (async function fillProvices() {
             const result = await getProvices();
-            let dataProvices = $.map(result.provincias, function(prov) {
+            let dataProvices = $.map(result.provincias, function (prov) {
                 prov.id = prov.id
                 prov.text = prov.nombre;
                 return prov;
@@ -149,7 +159,7 @@
 
             const result = await getCities(codProvince);
 
-            let dataCities = $.map(result.localidades, function(prov) {
+            let dataCities = $.map(result.localidades, function (prov) {
                 prov.id = prov.id
                 prov.text = capitalizeFirstLetter(prov.nombre);
                 return prov;
@@ -167,21 +177,30 @@
             $('#LocalidadDrop').change();
         }
 
-        $(document).ready(function() {
+        // DOCUMENT READY
+        $(document).ready(function () {
+            $('input[name="FotoPerfil"]').val('');
+
             $('#customFile').change(
-                function() {
+                function () {
                     var fileName = $(this).val().replace('C:\\fakepath\\', ' ');
                     $(this).next('.custom-file-label').html(fileName);
                 }
             );
 
-            $('#file-reset').on('click', function() {
+            $('#file-reset').on('click', function () {
                 $('#customFile').val('');
                 $('#customFile').next('.custom-file-label').html('');
             });
 
+            $('#picture-reset').on('click', function () {
+                $('#FotoPerfilPath').val('');
+                $('#profile-area-saved').hide();
+                $('#profile-area-empty').show();
+            });
+
             $('#emailCheckBox').change(
-                function() {
+                function () {
                     if (this.checked) {
                         $('#Email').prop('readonly', true);
                         $('#Email').prop('disabled', true);
@@ -195,7 +214,7 @@
             );
 
             $('#ProvinciaDrop').change(
-                function() {
+                function () {
                     $("#ProvinciaDrop option[value='']").remove();
                     $('#Provincia').val(this.value);
                     fillCities(this.value);
@@ -203,17 +222,12 @@
             );
 
             $('#LocalidadDrop').change(
-                function() {
+                function () {
                     $('#Localidad').val(this.value);
                 }
             );
 
-            $('#picture-reset').on('click', function() {
-                $('#profile-area-saved').hide();
-                $('#profile-area-empty').show();
-            });
-
-            (function() {
+            (function () {
                 if ("@Model.FotoPerfilPath" == "" || $('span[data-valmsg-for="FotoPerfil"]').html() != "") {
                     $('#profile-area-saved').hide();
                     $('#profile-area-empty').show();

@@ -36,5 +36,6 @@ namespace Matchbox.Models
         [DisplayName("Foto de perfil")]
         public IFormFile FotoPerfil { get; set; }
         public string FotoPerfilPath { get; set; }
+        public string FotoPerfilPath_Old { get; set; }
     }
 }

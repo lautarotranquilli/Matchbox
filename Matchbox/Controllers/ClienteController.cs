@@ -22,8 +22,22 @@ namespace Matchbox.Controllers
 
         // GET
         [Route("Perfiles/Cliente/Crear")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            if (HttpContext.Session.Get("_UserID") == null)
+            {
+                return NotFound();
+            }
+
+            int idUser = Convert.ToInt32(Encoding.Default.GetString(HttpContext.Session.Get("_UserID")));
+
+            Cliente cliente = await _context.Cliente.FirstOrDefaultAsync(c => c.IdUsuario == idUser);
+            
+            if (cliente != null)
+            {
+                return NotFound();
+            }
+
             ViewBag.UserEmail = Encoding.Default.GetString(HttpContext.Session.Get("_UserEmail"));
             return View();
         }
@@ -65,7 +79,7 @@ namespace Matchbox.Controllers
         }
 
         // GET
-        //[Route("Perfiles/Cliente/Editar")]
+        [Route("Perfiles/Cliente/Editar/{id}")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -73,7 +87,14 @@ namespace Matchbox.Controllers
                 return NotFound();
             }
 
-            Cliente cliente = await _context.Cliente.FindAsync(id);
+            if (HttpContext.Session.Get("_UserID") == null)
+            {
+                return NotFound();
+            }
+
+            int idUser = Convert.ToInt32(Encoding.Default.GetString(HttpContext.Session.Get("_UserID")));
+
+            Cliente cliente = await _context.Cliente.FirstOrDefaultAsync(c => c.Id == id && c.IdUsuario == idUser);
             if (cliente == null)
             {
                 return NotFound();
@@ -91,6 +112,7 @@ namespace Matchbox.Controllers
                 Localidad = cliente.IdLocalidad,
                 FotoPerfil = null,
                 FotoPerfilPath = cliente.ProfilePath,
+                FotoPerfilPath_Old = cliente.ProfilePath,
                 FechaAlta = cliente.FechaAlta,
             };
             return View(clientVM);
@@ -99,8 +121,8 @@ namespace Matchbox.Controllers
         // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        //[Route("Perfiles/Cliente/Editar")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,IdUsuario,Nombre,Apellido,Telefono,Email,Provincia,Localidad,FotoPerfil,FotoPerfilPath,FechaAlta")] ClienteViewModel cliente)
+        [Route("Perfiles/Cliente/Editar/{id}")]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,IdUsuario,Nombre,Apellido,Telefono,Email,Provincia,Localidad,FotoPerfil,FotoPerfilPath,FechaAlta,FotoPerfilPath_Old")] ClienteViewModel cliente)
         {
             if (id != cliente.Id)
             {
@@ -111,6 +133,31 @@ namespace Matchbox.Controllers
             {
                 try
                 {
+                    Cliente newClient = new Cliente
+                    {
+                        Id = cliente.Id,
+                        IdUsuario = cliente.IdUsuario,
+                        Nombre = cliente.Nombre,
+                        Apellido = cliente.Apellido,
+                        Telefono = cliente.Telefono,
+                        Email = cliente.Email,
+                        IdProvincia = cliente.Provincia,
+                        IdLocalidad = cliente.Localidad,
+                        FechaAlta = cliente.FechaAlta,
+                        FechaModificacion = DateTime.Now
+                    };
+
+                    if (cliente.FotoPerfilPath_Old != cliente.FotoPerfilPath)
+                    {
+                        string[] ss = new string[] { Directory.GetCurrentDirectory(), "wwwroot", "img", "user-profile", cliente.FotoPerfilPath_Old };
+                        string path = Path.Combine(ss);
+
+                        if (System.IO.File.Exists(path))
+                            System.IO.File.Delete(path);
+
+                        newClient.ProfilePath = null;
+                    }
+
                     string uniqueFileName = null;
 
                     if (cliente.FotoPerfil != null)
@@ -123,27 +170,8 @@ namespace Matchbox.Controllers
                             return View(cliente);
                         }
 
-                        string[] ss = new string[] { Directory.GetCurrentDirectory(), "wwwroot", "img", "user-profile", cliente.FotoPerfilPath };
-                        string path = Path.Combine(ss);
-
-                        if (System.IO.File.Exists(path))
-                            System.IO.File.Delete(path);
+                        newClient.ProfilePath = uniqueFileName;
                     }
-
-                    Cliente newClient = new Cliente
-                    {
-                        Id = cliente.Id,
-                        IdUsuario = cliente.IdUsuario,
-                        Nombre = cliente.Nombre,
-                        Apellido = cliente.Apellido,
-                        Telefono = cliente.Telefono,
-                        Email = cliente.Email,
-                        IdProvincia = cliente.Provincia,
-                        IdLocalidad = cliente.Localidad,
-                        ProfilePath = uniqueFileName ?? cliente.FotoPerfilPath,
-                        FechaAlta = cliente.FechaAlta,
-                        FechaModificacion = DateTime.Now
-                    };
 
                     _context.Update(newClient);
                     await _context.SaveChangesAsync();
