@@ -115,6 +115,8 @@ namespace Matchbox.Controllers
                 FotoPerfilPath_Old = cliente.ProfilePath,
                 FechaAlta = cliente.FechaAlta,
             };
+
+            ViewBag.UserEmail = Encoding.Default.GetString(HttpContext.Session.Get("_UserEmail"));
             return View(clientVM);
         }
 
@@ -189,6 +191,7 @@ namespace Matchbox.Controllers
                 }
                 return RedirectToAction("Index", "Home", new { area = "" });
             }
+            ViewBag.UserEmail = Encoding.Default.GetString(HttpContext.Session.Get("_UserEmail"));
             return View(cliente);
         }
 

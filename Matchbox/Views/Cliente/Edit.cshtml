@@ -4,9 +4,6 @@
     ViewData["Title"] = "Crear perfil de cliente";
 }
 
-<div class="text-left">
-    <a asp-action="Index" style="text-decoration: none;">← Volver</a>
-</div>
 <h2 class="text-center">Editar perfil de cliente</h2>
 <p class="text-center text-danger">(*) Campos obligatorios</p>
 <hr />
@@ -40,6 +37,10 @@
                 <label asp-for="Email" class="control-label"></label>
                 <input asp-for="Email" class="form-control" autocomplete="off" />
                 <span asp-validation-for="Email" class="text-danger"></span>
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="emailCheckBox">
+                    <label class="custom-control-label" for="emailCheckBox">Utilizar el mismo mail de usuario</label>
+                </div>
             </div>
             <div class="form-group col-12 col-md-6">
                 <b class="text-danger">* </b>
@@ -93,7 +94,7 @@
             </div>
 
             <div class="form-group col-12 mt-3 mb-0 text-center">
-                <a asp-action="Index" class="btn btn-secondary" role="button">Descartar</a>
+                <a asp-controller="Home" asp-action="Index" class="btn btn-secondary" role="button">Descartar</a>
                 <input type="submit" value="Guardar" class="btn btn-primary" />
             </div>
         </div>
@@ -123,7 +124,7 @@
 
         (async function fillProvices() {
             const result = await getProvices();
-            let dataProvices = $.map(result.provincias, function (prov) {
+            let dataProvices = $.map(result.provincias, function(prov) {
                 prov.id = prov.id
                 prov.text = prov.nombre;
                 return prov;
@@ -159,7 +160,7 @@
 
             const result = await getCities(codProvince);
 
-            let dataCities = $.map(result.localidades, function (prov) {
+            let dataCities = $.map(result.localidades, function(prov) {
                 prov.id = prov.id
                 prov.text = capitalizeFirstLetter(prov.nombre);
                 return prov;
@@ -178,43 +179,46 @@
         }
 
         // DOCUMENT READY
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('input[name="FotoPerfil"]').val('');
 
             $('#customFile').change(
-                function () {
+                function() {
                     var fileName = $(this).val().replace('C:\\fakepath\\', ' ');
                     $(this).next('.custom-file-label').html(fileName);
                 }
             );
 
-            $('#file-reset').on('click', function () {
+            $('#file-reset').on('click', function() {
                 $('#customFile').val('');
                 $('#customFile').next('.custom-file-label').html('');
             });
 
-            $('#picture-reset').on('click', function () {
+            $('#picture-reset').on('click', function() {
                 $('#FotoPerfilPath').val('');
                 $('#profile-area-saved').hide();
                 $('#profile-area-empty').show();
             });
 
+            var emailWrited = "@Model.Email";
+
             $('#emailCheckBox').change(
-                function () {
+                function() {
                     if (this.checked) {
+                        emailWrited = $('#Email').val();
                         $('#Email').prop('readonly', true);
-                        $('#Email').prop('disabled', true);
+                        //$('#Email').prop('disabled', true);
                         $('#Email').val('@ViewBag.UserEmail');
                         return;
                     }
                     $('#Email').prop('readonly', false);
                     $('#Email').prop('disabled', false);
-                    $('#Email').val('');
+                    $('#Email').val(emailWrited);
                 }
             );
 
             $('#ProvinciaDrop').change(
-                function () {
+                function() {
                     $("#ProvinciaDrop option[value='']").remove();
                     $('#Provincia').val(this.value);
                     fillCities(this.value);
@@ -222,12 +226,12 @@
             );
 
             $('#LocalidadDrop').change(
-                function () {
+                function() {
                     $('#Localidad').val(this.value);
                 }
             );
 
-            (function () {
+            (function() {
                 if ("@Model.FotoPerfilPath" == "" || $('span[data-valmsg-for="FotoPerfil"]').html() != "") {
                     $('#profile-area-saved').hide();
                     $('#profile-area-empty').show();
