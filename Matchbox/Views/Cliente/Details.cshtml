@@ -1,48 +1,41 @@
 ﻿@model Matchbox.Models.ClienteViewModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Editar perfil de cliente";
 }
 
-<h1>Details</h1>
+@if (ViewBag.ShowOptions)
+{
+    <div class="card">
+        <div class="card-body">
+            <a class="btn btn-primary" asp-controller="Usuarios" asp-action="Index">Editar</a>
+            <a class="btn btn-danger" asp-controller="Usuarios" asp-action="Index">Eliminar</a>
+        </div>
+    </div>
+}
 
-<div>
-    <h4>Cliente</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IdUsuario)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IdUsuario)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nombre)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nombre)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FechaAlta)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FechaAlta)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FechaModificacion)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FechaModificacion)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FechaBaja)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FechaBaja)
-        </dd>
-    </dl>
+<div class="row mt-3">
+    @if (!string.IsNullOrEmpty(Model.FotoPerfilPath))
+    {
+        <div class="col-12 col-md-2">
+            <div class="ratio ratio-1x1">
+                <img src="~/img/user-profile/@Model.FotoPerfilPath" class="img-thumbnail" style="object-fit: cover;">
+            </div>
+        </div>
+    }
+    <div class="col-12 col-md-10">
+        <h2>
+            @Html.DisplayFor(model => model.Nombre) @Html.DisplayFor(model => model.Apellido)
+        </h2>
+        <div>
+            @Html.DisplayFor(model => model.Localidad) @Html.DisplayFor(model => model.Provincia)
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }

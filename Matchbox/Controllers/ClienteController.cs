@@ -236,6 +236,42 @@ namespace Matchbox.Controllers
             return uniqueFileName;
         }
 
+        [HttpGet]
+        [Route("Perfiles/Cliente/Detalles/{id}")]
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            int? idUser = 0;
+            if (HttpContext.Session.Get("_UserID") != null)
+                idUser = Convert.ToInt32(Encoding.Default.GetString(HttpContext.Session.Get("_UserID")));
+            
+            Cliente cliente= await _context.Cliente.FirstOrDefaultAsync(c => c.Id == id);
+
+            if (cliente == null)
+                return NotFound();
+
+            ClienteViewModel clientVM = new ClienteViewModel
+            {
+                Id = cliente.Id,
+                IdUsuario = cliente.IdUsuario,
+                Nombre = cliente.Nombre,
+                Apellido = cliente.Apellido,
+                Telefono = cliente.Telefono,
+                Email = cliente.Email,
+                Provincia = cliente.IdProvincia,
+                Localidad = cliente.IdLocalidad,
+                FotoPerfil = null,
+                FotoPerfilPath = cliente.ProfilePath,
+                FotoPerfilPath_Old = cliente.ProfilePath,
+                FechaAlta = cliente.FechaAlta,
+            };
+
+            ViewBag.ShowOptions = HttpContext.Session.GetString("_UserAdmin") == "1" || cliente.IdUsuario == idUser;
+            return View(clientVM);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Perfiles/Cliente/Eliminar/{id}")]
