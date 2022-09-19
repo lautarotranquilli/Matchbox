@@ -1,7 +1,10 @@
 ﻿@model Matchbox.Models.ClienteViewModel
 
 @{
-    ViewData["Title"] = "Crear perfil de cliente";
+    if (ViewBag.FromAdmin)
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    ViewData["Title"] = "Editar perfil de cliente";
 }
 
 <h2 class="text-center">Editar perfil de cliente</h2>

@@ -1,4 +1,5 @@
 ﻿using Matchbox.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -42,6 +43,15 @@ namespace Matchbox.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [Route("Admin")]
+        public IActionResult Admin()
+        {
+            if (HttpContext.Session.GetString("_UserAdmin") != "1")
+                return RedirectToAction("Index", "Home", new { area = "" });
+
+            return View();
         }
     }
 }
