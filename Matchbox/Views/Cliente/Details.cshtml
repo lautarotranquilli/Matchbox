@@ -8,8 +8,29 @@
 {
     <div class="card">
         <div class="card-body">
-            <a class="btn btn-primary" asp-controller="Usuarios" asp-action="Index">Editar</a>
-            <a class="btn btn-danger" asp-controller="Usuarios" asp-action="Index">Eliminar</a>
+            <a class="btn btn-primary" asp-controller="Cliente" asp-action="Edit" asp-route-id="@Model.Id">Editar</a>
+
+            @*<a class="btn btn-danger" asp-controller="Cliente" asp-action="Delete" asp-route-id="@Model.Id">Eliminar</a>*@
+            <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Eliminar</a>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Eliminar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ¿Estás seguro que desea eliminar el perfil?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <a class="btn btn-danger" asp-controller="Cliente" asp-action="Delete" asp-route-id="@Model.Id">Eliminar</a>
+                </div>
+            </div>
         </div>
     </div>
 }

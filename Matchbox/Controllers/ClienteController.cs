@@ -101,7 +101,7 @@ namespace Matchbox.Controllers
             else
                 cliente = await _context.Cliente.FirstOrDefaultAsync(c => c.Id == id && c.IdUsuario == idUser);
 
-            if (cliente == null)
+            if (cliente == null || cliente.FechaBaja != null)
             {
                 return NotFound();
             }
@@ -249,7 +249,7 @@ namespace Matchbox.Controllers
             
             Cliente cliente= await _context.Cliente.FirstOrDefaultAsync(c => c.Id == id);
 
-            if (cliente == null)
+            if (cliente == null || cliente.FechaBaja != null)
                 return NotFound();
 
             ClienteViewModel clientVM = new ClienteViewModel
@@ -272,8 +272,7 @@ namespace Matchbox.Controllers
             return View(clientVM);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpGet]
         [Route("Perfiles/Cliente/Eliminar/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -292,7 +291,8 @@ namespace Matchbox.Controllers
                 return NotFound();
             }
 
-            return RedirectToAction("Index", "Usuarios", new { area = "" });
+            //return RedirectToAction("Index", "Cliente", new { area = "" });
+            return View("DeleteConfirm");
         }
     }
 }

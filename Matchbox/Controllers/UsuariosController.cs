@@ -113,8 +113,8 @@ namespace Matchbox.Controllers
 
             foreach (var user in users)
             {
-                var cli = await _context.Cliente.FirstOrDefaultAsync(c => c.IdUsuario == user.Id);
-                var emp = await _context.Empresa.FirstOrDefaultAsync(e => e.IdUsuario == user.Id);
+                var cli = await _context.Cliente.FirstOrDefaultAsync(c => c.IdUsuario == user.Id && c.FechaBaja == null);
+                var emp = await _context.Empresa.FirstOrDefaultAsync(e => e.IdUsuario == user.Id && e.FechaBaja == null);
 
                 usersToList.Add(new UserItemListViewModel
                 {
