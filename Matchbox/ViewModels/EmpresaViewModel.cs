@@ -1,20 +1,17 @@
 ﻿using Matchbox.Validations;
 using Microsoft.AspNetCore.Http;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
 
 namespace Matchbox.Models
 {
-    public class ClienteViewModel : BaseModel
+    public class EmpresaViewModel : BaseModel
     {
         [Required]
         public int IdUsuario { get; set; }
 
-        [Required(ErrorMessage = "Ingrese un nombre.")]
-        public string Nombre { get; set; }
-
-        [Required(ErrorMessage = "Ingrese un apellido.")]
-        public string Apellido { get; set; }
+        [Required(ErrorMessage = "Ingrese la razon social.")]
+        public string RazonSocial { get; set; }
 
         [Required(ErrorMessage = "Ingrese un teléfono.")]
         [StringLength(10, ErrorMessage = "Formato de teléfono no válido.")]
