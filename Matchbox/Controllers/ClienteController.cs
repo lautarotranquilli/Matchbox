@@ -75,6 +75,8 @@ namespace Matchbox.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index", "Home", new { area = "" });
             }
+            
+            ViewBag.UserEmail = Encoding.Default.GetString(HttpContext.Session.Get("_UserEmail"));
             return View(cliente);
         }
 
