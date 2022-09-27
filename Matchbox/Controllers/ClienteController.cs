@@ -32,7 +32,7 @@ namespace Matchbox.Controllers
             int idUser = Convert.ToInt32(Encoding.Default.GetString(HttpContext.Session.Get("_UserID")));
 
             Cliente cliente = await _context.Cliente.FirstOrDefaultAsync(c => c.IdUsuario == idUser);
-            
+
             if (cliente != null)
             {
                 return NotFound();
@@ -75,6 +75,8 @@ namespace Matchbox.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index", "Home", new { area = "" });
             }
+            
+            ViewBag.UserEmail = Encoding.Default.GetString(HttpContext.Session.Get("_UserEmail"));
             return View(cliente);
         }
 
@@ -93,9 +95,15 @@ namespace Matchbox.Controllers
             }
 
             int idUser = Convert.ToInt32(Encoding.Default.GetString(HttpContext.Session.Get("_UserID")));
+            bool isAdmin = HttpContext.Session.GetString("_UserAdmin") == "1";
+            Cliente cliente;
 
-            Cliente cliente = await _context.Cliente.FirstOrDefaultAsync(c => c.Id == id && c.IdUsuario == idUser);
-            if (cliente == null)
+            if (isAdmin)
+                cliente = await _context.Cliente.FirstOrDefaultAsync(c => c.Id == id);
+            else
+                cliente = await _context.Cliente.FirstOrDefaultAsync(c => c.Id == id && c.IdUsuario == idUser);
+
+            if (cliente == null || cliente.FechaBaja != null)
             {
                 return NotFound();
             }
@@ -117,6 +125,7 @@ namespace Matchbox.Controllers
             };
 
             ViewBag.UserEmail = Encoding.Default.GetString(HttpContext.Session.Get("_UserEmail"));
+            ViewBag.FromAdmin = HttpContext.Session.GetString("_UserAdmin") == "1";
             return View(clientVM);
         }
 
@@ -189,9 +198,14 @@ namespace Matchbox.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Index", "Home", new { area = "" });
+
+                if (HttpContext.Session.GetString("_UserAdmin") == "1")
+                    return RedirectToAction("Index", "Usuarios", new { area = "" });
+                else
+                    return RedirectToAction("Index", "Home", new { area = "" });
             }
             ViewBag.UserEmail = Encoding.Default.GetString(HttpContext.Session.Get("_UserEmail"));
+            ViewBag.FromAdmin = HttpContext.Session.GetString("_UserAdmin") == "1";
             return View(cliente);
         }
 
@@ -222,6 +236,65 @@ namespace Matchbox.Controllers
                 }
             }
             return uniqueFileName;
+        }
+
+        [HttpGet]
+        [Route("Perfiles/Cliente/Detalles/{id}")]
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            int? idUser = 0;
+            if (HttpContext.Session.Get("_UserID") != null)
+                idUser = Convert.ToInt32(Encoding.Default.GetString(HttpContext.Session.Get("_UserID")));
+            
+            Cliente cliente= await _context.Cliente.FirstOrDefaultAsync(c => c.Id == id);
+
+            if (cliente == null || cliente.FechaBaja != null)
+                return NotFound();
+
+            ClienteViewModel clientVM = new ClienteViewModel
+            {
+                Id = cliente.Id,
+                IdUsuario = cliente.IdUsuario,
+                Nombre = cliente.Nombre,
+                Apellido = cliente.Apellido,
+                Telefono = cliente.Telefono,
+                Email = cliente.Email,
+                Provincia = cliente.IdProvincia,
+                Localidad = cliente.IdLocalidad,
+                FotoPerfil = null,
+                FotoPerfilPath = cliente.ProfilePath,
+                FotoPerfilPath_Old = cliente.ProfilePath,
+                FechaAlta = cliente.FechaAlta,
+            };
+
+            ViewBag.ShowOptions = HttpContext.Session.GetString("_UserAdmin") == "1" || cliente.IdUsuario == idUser;
+            return View(clientVM);
+        }
+
+        [HttpGet]
+        [Route("Perfiles/Cliente/Eliminar/{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                var client = await _context.Cliente.FirstOrDefaultAsync(c => c.Id == id);
+
+                client.FechaModificacion = DateTime.Now;
+                client.FechaBaja = DateTime.Now.Date;
+
+                _context.Update(client);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return NotFound();
+            }
+
+            //return RedirectToAction("Index", "Cliente", new { area = "" });
+            return View("DeleteConfirm");
         }
     }
 }

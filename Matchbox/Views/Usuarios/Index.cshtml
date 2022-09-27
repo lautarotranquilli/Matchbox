@@ -1,59 +1,93 @@
-﻿@model IEnumerable<Matchbox.Models.Usuario>
+﻿@model List<Matchbox.ViewModels.UserItemListViewModel>
 
 @{
-    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Usuarios";
 }
+
+<div class="text-left">
+    <a asp-controller="Home" asp-action="Admin" style="text-decoration: none;">← Volver</a>
+</div>
 
 <h1>Lista de usuarios</h1>
 
-<p>
-    <a asp-action="Create">Crear nuevo usuario</a>
-</p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Nombre)
+                Nombre
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Apellido)
+                Apellido
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Email)
+                Email
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FechaAlta)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FechaModificacion)
+                Perfiles creados
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nombre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Apellido)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaAlta)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaModificacion)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Detalles</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Nombre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Apellido)
+                </td>
+                <td>
+                    @Html.DisplayTextFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @if (item.ClienteId.HasValue)
+                    {
+                        <a asp-controller="Cliente" asp-action="Details" asp-route-id="@item.ClienteId">Cliente</a>
+                    }
+                    @if (item.EmpresaId.HasValue)
+                    {
+                        <a href="#">Empresa</a>
+                    }
+                </td>
+                <td>
+                    <a href="#">Editar</a> |
+                    <a href="#">Detalles</a> |
+                    <a data-bs-toggle="modal" data-bs-target="#exampleModal">Eliminar</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Eliminar</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Está seguro que quiere eliminar el perfil seleccionado?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" id="confirmDelete" asp-controller="Cliente" asp-action="Delete" asp-route-id="">
+                    Si
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let select
+
+    $('#confirmDelete').on('click', function() {
+        $('#customFile').val('');
+        $('#customFile').next('.custom-file-label').html('');
+    });
+</script>

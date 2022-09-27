@@ -1,48 +1,62 @@
 ﻿@model Matchbox.Models.ClienteViewModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Editar perfil de cliente";
 }
 
-<h1>Details</h1>
+@if (ViewBag.ShowOptions)
+{
+    <div class="card">
+        <div class="card-body">
+            <a class="btn btn-primary" asp-controller="Cliente" asp-action="Edit" asp-route-id="@Model.Id">Editar</a>
 
-<div>
-    <h4>Cliente</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IdUsuario)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IdUsuario)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nombre)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nombre)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FechaAlta)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FechaAlta)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FechaModificacion)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FechaModificacion)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FechaBaja)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FechaBaja)
-        </dd>
-    </dl>
+            @*<a class="btn btn-danger" asp-controller="Cliente" asp-action="Delete" asp-route-id="@Model.Id">Eliminar</a>*@
+            <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Eliminar</a>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Eliminar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ¿Estás seguro que desea eliminar el perfil?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <a class="btn btn-danger" asp-controller="Cliente" asp-action="Delete" asp-route-id="@Model.Id">Eliminar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="row mt-3">
+    @if (!string.IsNullOrEmpty(Model.FotoPerfilPath))
+    {
+        <div class="col-12 col-md-2">
+            <div class="ratio ratio-1x1">
+                <img src="~/img/user-profile/@Model.FotoPerfilPath" class="img-thumbnail" style="object-fit: cover;">
+            </div>
+        </div>
+    }
+    <div class="col-12 col-md-10">
+        <h2>
+            @Html.DisplayFor(model => model.Nombre) @Html.DisplayFor(model => model.Apellido)
+        </h2>
+        <div>
+            @Html.DisplayFor(model => model.Localidad) @Html.DisplayFor(model => model.Provincia)
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }

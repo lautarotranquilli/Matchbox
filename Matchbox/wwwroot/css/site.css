@@ -18,9 +18,17 @@ body {
     background-color: var(--color-princial);
 }
 
+    .header-bottom.header-bottom-admin {
+        background-color: black;
+    }
+
 footer {
     background-color: var(--color-principal-oscuro);
 }
+
+    footer.footer-admin {
+        background-color: black;
+    }
 
 .acount_icon {
     color: white;

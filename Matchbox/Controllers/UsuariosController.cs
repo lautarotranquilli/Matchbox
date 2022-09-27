@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Matchbox.Controllers
@@ -99,6 +100,34 @@ namespace Matchbox.Controllers
             HttpContext.Session.Clear();
 
             return RedirectToAction("Index", "Home", new { area = "" });
+        }
+
+        [Route("Admin/Usuarios")]
+        public async Task<IActionResult> Index()
+        {
+            if (HttpContext.Session.GetString("_UserAdmin") != "1")
+                return RedirectToAction("Index", "Home", new { area = "" });
+
+            List<UserItemListViewModel> usersToList = new List<UserItemListViewModel>();
+            var users = await _context.Usuario.ToArrayAsync();
+
+            foreach (var user in users)
+            {
+                var cli = await _context.Cliente.FirstOrDefaultAsync(c => c.IdUsuario == user.Id && c.FechaBaja == null);
+                var emp = await _context.Empresa.FirstOrDefaultAsync(e => e.IdUsuario == user.Id && e.FechaBaja == null);
+
+                usersToList.Add(new UserItemListViewModel
+                {
+                    Id = user.Id,
+                    Nombre = user.Nombre,
+                    Apellido = user.Apellido,
+                    Email = user.Email,
+                    ClienteId = cli?.Id,
+                    EmpresaId = emp?.Id
+                });
+            }
+
+            return View(usersToList);
         }
     }
 }
