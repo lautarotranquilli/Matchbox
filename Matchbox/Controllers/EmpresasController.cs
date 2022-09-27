@@ -82,7 +82,7 @@ namespace Matchbox.Controllers
             return View(empresa);
         }
 
-        // GET: Empresas/Edit/5
+        // GET
         [Route("Perfiles/Empresas/Editar/{id}")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -97,9 +97,15 @@ namespace Matchbox.Controllers
             }
 
             int idUser = Convert.ToInt32(Encoding.Default.GetString(HttpContext.Session.Get("_UserID")));
+            bool isAdmin = HttpContext.Session.GetString("_UserAdmin") == "1";
+            Empresa empresa;
 
-            Empresa empresa = await _context.Empresa.FirstOrDefaultAsync(c => c.Id == id && c.IdUsuario == idUser);
-            if (empresa == null)
+            if (isAdmin)
+                empresa = await _context.Empresa.FirstOrDefaultAsync(c => c.Id == id);
+            else
+                empresa = await _context.Empresa.FirstOrDefaultAsync(c => c.Id == id && c.IdUsuario == idUser);
+
+            if (empresa == null || empresa.FechaBaja != null)
             {
                 return NotFound();
             }
@@ -119,7 +125,9 @@ namespace Matchbox.Controllers
                 FechaAlta = empresa.FechaAlta,
             };
 
+            
             ViewBag.UserEmail = Encoding.Default.GetString(HttpContext.Session.Get("_UserEmail"));
+            ViewBag.FromAdmin = HttpContext.Session.GetString("_UserAdmin") == "1";
             return View(empresaVM);
         }
 
@@ -191,21 +199,73 @@ namespace Matchbox.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Index", "Home", new { area = "" });
+                if (HttpContext.Session.GetString("_UserAdmin") == "1")
+                    return RedirectToAction("Index", "Usuarios", new { area = "" });
+                else
+                    return RedirectToAction("Index", "Home", new { area = "" });
             }
             ViewBag.UserEmail = Encoding.Default.GetString(HttpContext.Session.Get("_UserEmail"));
+            ViewBag.FromAdmin = HttpContext.Session.GetString("_UserAdmin") == "1";
             return View(empresa);
         }
 
-        // POST: Empresas/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [HttpGet]
+        [Route("Perfiles/Empresas/Detalles/{id}")]
+        public async Task<IActionResult> Details(int? id)
         {
-            var empresa = await _context.Empresa.FindAsync(id);
-            _context.Empresa.Remove(empresa);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (id == null)
+                return NotFound();
+
+            int? idUser = 0;
+            if (HttpContext.Session.Get("_UserID") != null)
+                idUser = Convert.ToInt32(Encoding.Default.GetString(HttpContext.Session.Get("_UserID")));
+
+            Empresa empresa = await _context.Empresa.FirstOrDefaultAsync(c => c.Id == id);
+
+            if (empresa == null || empresa.FechaBaja != null)
+                return NotFound();
+
+            EmpresaViewModel empresaVM = new EmpresaViewModel
+            {
+                Id = empresa.Id,
+                IdUsuario = empresa.IdUsuario,
+                RazonSocial = empresa.RazonSocial,
+                Telefono = empresa.Telefono,
+                Email = empresa.Email,
+                Provincia = empresa.IdProvincia,
+                Localidad = empresa.IdLocalidad,
+                FotoPerfil = null,
+                FotoPerfilPath = empresa.ProfilePath,
+                FotoPerfilPath_Old = empresa.ProfilePath,
+                FechaAlta = empresa.FechaAlta,
+            };
+
+            ViewBag.ShowOptions = HttpContext.Session.GetString("_UserAdmin") == "1" || empresa.IdUsuario == idUser;
+            return View(empresaVM);
+        }
+
+        // POST: Empresas/Delete/5
+        [HttpGet]
+        [Route("Perfiles/Empresas/Eliminar/{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                var empresa = await _context.Empresa.FirstOrDefaultAsync(c => c.Id == id);
+
+                empresa.FechaModificacion = DateTime.Now;
+                empresa.FechaBaja = DateTime.Now.Date;
+
+                _context.Update(empresa);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return NotFound();
+            }
+
+            //return RedirectToAction("Index", "Cliente", new { area = "" });
+            return View("DeleteConfirm");
         }
 
         private bool EmpresaExists(int id)

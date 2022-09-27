@@ -49,7 +49,7 @@
                     }
                     @if (item.EmpresaId.HasValue)
                     {
-                        <a href="#">Empresa</a>
+                        <a asp-controller="Empresas" asp-action="Details" asp-route-id="@item.EmpresaId">Empresa</a>
                     }
                 </td>
                 <td>

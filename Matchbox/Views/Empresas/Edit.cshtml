@@ -1,7 +1,10 @@
 ﻿@model Matchbox.Models.EmpresaViewModel
 
 @{
-    ViewData["Title"] = "Edit";
+    if (ViewBag.FromAdmin)
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    ViewData["Title"] = "Editar perfil de empresa";
 }
 
 <h2 class="text-center">Editar perfil de empresa</h2>
