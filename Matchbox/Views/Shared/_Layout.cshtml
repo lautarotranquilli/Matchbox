@@ -1,7 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Http
 
 @{
-    bool login = string.IsNullOrWhiteSpace(Context.Session.GetString("_UserID"));
+    int userId = Convert.ToInt32(Context.Session.GetString("_UserID"));
+    bool login = userId != 0;
     bool admin = Context.Session.GetString("_UserAdmin") == "1";
 }
 
@@ -51,7 +52,7 @@
                             <li><a asp-controller="Home" asp-action="Index">Inicio</a></li>
                             <li><a href="#">Rubros</a></li>
                             @{
-                                if (!login)
+                                if (login)
                                 {
                                     <li>
                                         <a>
@@ -66,8 +67,8 @@
                                             </svg>
                                         </a>
                                         <ul class="sub-menu">
-                                            <li><a asp-controller="Cliente" asp-action="Create">Perfil cliente</a></li>
-                                            <li><a asp-controller="Empresas" asp-action="Create">Perfil empresa</a></li>
+                                            <li><a asp-controller="Cliente" asp-action="Details" asp-route-id="@userId">Perfil cliente</a></li>
+                                            <li><a asp-controller="Empresas" asp-action="Details" asp-route-id="@userId">Perfil empresa</a></li>
                                             <li><a href="#">Servicios contratados</a></li>
                                             <li><a href="#">Mi agenda de trabajo</a></li>
                                         </ul>
@@ -116,10 +117,10 @@
                             <li><a asp-controller="Usuarios" asp-action="SignIn">Iniciar sesión</a></li>
                             <li><a asp-controller="Usuarios" asp-action="Create">Registrarse</a></li>
                             @{
-                                if (!login)
+                                if (login)
                                 {
-                                    <li><a asp-controller="Cliente" asp-action="Create">Perfil cliente</a></li>
-                                    <li><a asp-controller="Empresas" asp-action="Create">Perfil empresa</a></li>
+                                    <li><a asp-controller="Cliente" asp-action="Details" asp-route-id="@userId">Perfil cliente</a></li>
+                                    <li><a asp-controller="Empresas" asp-action="Details" asp-route-id="@userId">Perfil empresa</a></li>
                                     <li><a href="#">Servicios contratados</a></li>
                                     <li><a href="#">Mi agenda de trabajo</a></li>
                                     <li><a asp-controller="Usuarios" asp-action="LogOff">Cerrar sesión</a></li>

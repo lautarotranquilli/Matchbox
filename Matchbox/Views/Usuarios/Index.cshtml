@@ -47,6 +47,10 @@
                     {
                         <a asp-controller="Cliente" asp-action="Details" asp-route-id="@item.ClienteId">Cliente</a>
                     }
+                    @if(item.ClienteId.HasValue && item.EmpresaId.HasValue)
+                    {
+                        <b> | </b>
+                    }
                     @if (item.EmpresaId.HasValue)
                     {
                         <a asp-controller="Empresas" asp-action="Details" asp-route-id="@item.EmpresaId">Empresa</a>

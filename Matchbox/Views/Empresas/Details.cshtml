@@ -27,7 +27,7 @@
                     ¿Estás seguro que desea eliminar el perfil?
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <a class="btn btn-danger" asp-controller="Empresas" asp-action="Delete" asp-route-id="@Model.Id">Eliminar</a>
                 </div>
             </div>
@@ -46,8 +46,11 @@
     }
     <div class="col-12 col-md-10">
         <h2>
-            @Html.DisplayFor(model => model.RazonSocial) @Html.DisplayFor(model => model.Telefono)
+            @Html.DisplayFor(model => model.RazonSocial)
         </h2>
+        <div>
+            @Html.DisplayFor(model => model.Telefono)
+        </div>
         <div>
             @Html.DisplayFor(model => model.Localidad) @Html.DisplayFor(model => model.Provincia)
         </div>

@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Matchbox.Data;
+﻿using Matchbox.Data;
 using Matchbox.Models;
 using Microsoft.AspNetCore.Http;
-using System.Text;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Matchbox.Controllers
 {
@@ -33,11 +31,11 @@ namespace Matchbox.Controllers
 
             int idUser = Convert.ToInt32(Encoding.Default.GetString(HttpContext.Session.Get("_UserID")));
 
-            Empresa empresa = await _context.Empresa.FirstOrDefaultAsync(c => c.IdUsuario == idUser);
+            Empresa empresa = await _context.Empresa.FirstOrDefaultAsync(e => e.IdUsuario == idUser && e.FechaBaja == null);
 
             if (empresa != null)
             {
-                return NotFound();
+                return RedirectToAction("Details", new { id = idUser });
             }
 
             ViewBag.UserEmail = Encoding.Default.GetString(HttpContext.Session.Get("_UserEmail"));
@@ -75,7 +73,6 @@ namespace Matchbox.Controllers
                 _context.Add(newEmpresa);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index", "Home", new { area = "" });
-
             }
 
             ViewBag.UserEmail = Encoding.Default.GetString(HttpContext.Session.Get("_UserEmail"));
@@ -125,7 +122,6 @@ namespace Matchbox.Controllers
                 FechaAlta = empresa.FechaAlta,
             };
 
-            
             ViewBag.UserEmail = Encoding.Default.GetString(HttpContext.Session.Get("_UserEmail"));
             ViewBag.FromAdmin = HttpContext.Session.GetString("_UserAdmin") == "1";
             return View(empresaVM);
@@ -216,14 +212,17 @@ namespace Matchbox.Controllers
             if (id == null)
                 return NotFound();
 
+            if (id == 0)
+                return RedirectToAction("Create");
+
             int? idUser = 0;
             if (HttpContext.Session.Get("_UserID") != null)
                 idUser = Convert.ToInt32(Encoding.Default.GetString(HttpContext.Session.Get("_UserID")));
 
-            Empresa empresa = await _context.Empresa.FirstOrDefaultAsync(c => c.Id == id);
+            Empresa empresa = await _context.Empresa.FirstOrDefaultAsync(e => e.IdUsuario == id && e.FechaBaja == null);
 
-            if (empresa == null || empresa.FechaBaja != null)
-                return NotFound();
+            if (empresa == null)
+                return RedirectToAction("Create");
 
             EmpresaViewModel empresaVM = new EmpresaViewModel
             {
