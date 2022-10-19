@@ -1,0 +1,84 @@
+﻿@model Matchbox.Models.Servicio
+
+@{
+    ViewData["Title"] = "Crear servicio";
+}
+
+<div class="text-left">
+    <a asp-controller="Home" asp-action="Index" style="text-decoration: none;">← Volver</a>
+</div>
+<h2 class="text-center">Crear servicio</h2>
+@*<p class="text-center text-danger">(*) Campos obligatorios</p>*@
+<hr />
+<div class="row">
+    <form asp-action="Create" class="container" enctype="multipart/form-data">
+        <div class="row">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group col-12">
+                @*<b class="text-danger">* </b>*@
+                <label asp-for="IdRubro" class="control-label"></label>
+                <select class="form-select form-select-search form-select-provinces" id="ProvinciaDrop" style="width: 100%">
+                    <option value=""></option>
+                </select>
+                <span asp-validation-for="IdRubro" class="text-danger"></span>
+                <input type="hidden" asp-for="IdRubro" />
+            </div>
+            <div class="form-group col-12">
+                @*<b class="text-danger">* </b>*@
+                <label asp-for="Nombre" class="control-label"></label>
+                <input asp-for="Nombre" class="form-control" autocomplete="off" />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            <div class="form-group col-12">
+                @*<b class="text-danger">* </b>*@
+                <label asp-for="Descripcion" class="control-label"></label>
+                <textarea asp-for="Descripcion" class="form-control" autocomplete="off" rows="7"></textarea>
+                <span asp-validation-for="Descripcion" class="text-danger"></span>
+            </div>
+            <div class="form-group col-12 text-center text-sm-end mt-3 mb-0">
+                <input type="submit" value="Crear" class="btn btn-primary" />
+            </div>
+        </div>
+    </form>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        //$.ajax({
+        //    type: "GET",
+        //    url: "@Url.Action("GetList", "Rubros")",
+        //    success: (result) => {
+        //        console.log(result);
+        //    }
+        //});
+
+        async function getRubros() {
+            const request = "https://localhost:44389/Rubros";
+            const response = await fetch(request);
+            const data = await response.json();
+            return data;
+        }
+
+        (async function fillProvices() {
+            const result = await getRubros();
+
+            let dataProvices = $.map(result, function (prov) {
+                console.log(prov);
+                prov.id = prov.id
+                prov.text = prov.nombre;
+                return prov;
+            });
+
+            $('.form-select-provinces').select2({
+                theme: 'bootstrap-5',
+                language: 'es',
+                width: 'resolve',
+                data: dataProvices
+            })
+        }());
+    </script>
+    }
