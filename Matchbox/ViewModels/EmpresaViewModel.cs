@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
+using System;
+using Matchbox.ViewModels;
+using System.Collections.Generic;
 
 namespace Matchbox.Models
 {
@@ -34,5 +37,7 @@ namespace Matchbox.Models
         public IFormFile FotoPerfil { get; set; }
         public string FotoPerfilPath { get; set; }
         public string FotoPerfilPath_Old { get; set; }
+
+        public List<ServiciosListViewModel> ServiciosList { get; set; }
     }
 }

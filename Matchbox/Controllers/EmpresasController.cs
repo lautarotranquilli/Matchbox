@@ -1,9 +1,11 @@
 ﻿using Matchbox.Data;
 using Matchbox.Models;
+using Matchbox.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -238,6 +240,28 @@ namespace Matchbox.Controllers
                 FotoPerfilPath_Old = empresa.ProfilePath,
                 FechaAlta = empresa.FechaAlta,
             };
+
+            var servicios = await _context.Servicio
+                                            .Join(inner: _context.Rubro,
+                                                  outerKeySelector: ser => ser.IdRubro,
+                                                  innerKeySelector: rub => rub.Id,
+                                                  resultSelector: (ser, rub) => new ServiciosListViewModel
+                                                  {
+                                                      sId = ser.Id,
+                                                      sNombre = ser.Nombre,
+                                                      rNombre = rub.Nombre,
+                                                      sFechaBaja = ser.FechaBaja,
+                                                      sEmpresa = ser.IdEmpresa
+                                                  })
+                                            .Where(x => x.sEmpresa == empresaVM.Id && x.sFechaBaja == null)
+                                            .ToListAsync();
+
+            if (servicios != null)
+            {
+                empresaVM.ServiciosList = new List<ServiciosListViewModel>();
+                servicios.ForEach(s => empresaVM.ServiciosList.Add(s));
+            }
+            //empresaVM.ServiciosList = servicios;
 
             ViewBag.ShowOptions = HttpContext.Session.GetString("_UserAdmin") == "1" || empresa.IdUsuario == idUser;
             return View(empresaVM);

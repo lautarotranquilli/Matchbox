@@ -8,10 +8,11 @@
 {
     <div class="card">
         <div class="card-body">
-            <a class="btn btn-primary" asp-controller="Empresas" asp-action="Edit" asp-route-id="@Model.Id">Editar</a>
+            <a class="btn btn-primary" asp-controller="Servicios" asp-action="Create" asp-route-empresaId="@Model.Id"><b>+</b> Nuevo servicio</a>
+            <a class="btn btn-primary" asp-controller="Empresas" asp-action="Edit" asp-route-id="@Model.Id">Editar perfil</a>
 
             @*<a class="btn btn-danger" asp-controller="Empresas" asp-action="Delete" asp-route-id="@Model.Id">Eliminar</a>*@
-            <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Eliminar</a>
+            <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Eliminar perfil</a>
         </div>
     </div>
 
@@ -56,6 +57,41 @@
         </div>
     </div>
 </div>
+
+<h3>Servicios disponibles</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Nombre
+            </th>
+            <th>
+                Rubro
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.ServiciosList)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.sNombre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.rNombre)
+                </td>
+                <td>
+                    <a asp-controller="Empresas" asp-action="Details" asp-route-id="4">Ver</a>
+                    <a asp-controller="Empresas" asp-action="Details" asp-route-id="4"> Editar</a>
+                    <a asp-controller="Empresas" asp-action="Details" asp-route-id="4"> Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
 
 
 @section Scripts {

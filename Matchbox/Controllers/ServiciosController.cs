@@ -1,13 +1,15 @@
 ﻿using Matchbox.Data;
 using Matchbox.Models;
+using Matchbox.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Matchbox.Controllers
 {
-    [Route("Servicios")]
     public class ServiciosController : Controller
     {
         private readonly MatchboxDBContext _context;
@@ -17,7 +19,7 @@ namespace Matchbox.Controllers
             _context = context;
         }
 
-        // GET: ServiciosController
+        // GET
         public ActionResult Index()
         {
             return View();
@@ -29,73 +31,119 @@ namespace Matchbox.Controllers
             return View();
         }
 
-        // GET: ServiciosController/Create
-        [Route("Crear")]
-        public async Task<IActionResult> Create()
+        // GET
+        [Route("Perfiles/Empresas/{empresaId}/Servicios/Nuevo")]
+        public async Task<IActionResult> Create(int? empresaId)
         {
+            if (HttpContext.Session.Get("_UserID") == null || empresaId == null)
+                return NotFound();
+
+            int idUser = Convert.ToInt32(Encoding.Default.GetString(HttpContext.Session.Get("_UserID")));
+
+            Empresa empresa = await _context.Empresa.FirstOrDefaultAsync(e => e.IdUsuario == idUser && e.FechaBaja == null);
+
+            if (empresa == null || empresa.Id != empresaId)
+                return NotFound();
+
             return View();
         }
 
-        // POST: ServiciosController/Create
+        // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("Crear")]
-        public async Task<IActionResult> Create([Bind("IdRubro,Nombre,Descripcion")] Servicio servicio)
+        [Route("Perfiles/Empresas/{empresaId}/Servicios/Nuevo")]
+        public async Task<IActionResult> Create(int? empresaId, [Bind("IdRubro,Nombre,Descripcion")] ServicioViewModel servicio)
         {
-            try
-            {
-                servicio.IdEmpresa = 2;
-                servicio.FechaAlta = System.DateTime.Today;
+            if (empresaId == null)
+                return NotFound();
 
-                _context.Add(servicio);
+            if (ModelState.IsValid)
+            {
+                int idUser = Convert.ToInt32(Encoding.Default.GetString(HttpContext.Session.Get("_UserID")));
+
+                Empresa empresa = await _context.Empresa.FirstOrDefaultAsync(e => e.IdUsuario == idUser && e.FechaBaja == null);
+
+                Servicio newServicio = new Servicio
+                {
+                    IdRubro = servicio.IdRubro,
+                    IdEmpresa = empresa.Id,
+                    Nombre = servicio.Nombre,
+                    Descripcion = servicio.Descripcion,
+                    FechaAlta = DateTime.Today
+                };
+
+                _context.Add(newServicio);
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction(nameof(Create));
+                return RedirectToAction("Details", "Empresas", new { id = newServicio.IdEmpresa });
             }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: ServiciosController/Edit/5
-        [Route("Editar/{id}")]
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            Servicio servicio = await _context.Servicio.FirstOrDefaultAsync(s => s.Id == id);
 
             return View(servicio);
         }
 
-        // POST: ServiciosController/Edit/5
+        // GET
+        [Route("Perfiles/Empresas/{empresaId}/Servicios/Editar/{id}")]
+        public async Task<IActionResult> Edit(int? empresaId, int? id)
+        {
+            if (id == null 
+                || empresaId == null
+                || HttpContext.Session.Get("_UserID") == null)
+                return RedirectToAction("Index", "Home");
+
+            int idUser = Convert.ToInt32(Encoding.Default.GetString(HttpContext.Session.Get("_UserID")));
+
+            Empresa empresa = await _context.Empresa.FirstOrDefaultAsync(e => e.IdUsuario == idUser && e.FechaBaja == null);
+
+            if (empresa == null || empresa.Id != empresaId)
+                return RedirectToAction("Index", "Home");
+
+            Servicio servicio = await _context.Servicio.FirstOrDefaultAsync(s => s.Id == id && s.IdEmpresa == empresaId);
+
+            if (servicio == null)
+                return RedirectToAction("Details", "Empresas", new { id = empresaId });
+
+            ServicioViewModel servicioVM = new ServicioViewModel
+            {
+                Id = servicio.Id,
+                IdRubro = servicio.IdRubro,
+                IdEmpresa = servicio.IdEmpresa,
+                Nombre = servicio.Nombre,
+                Descripcion = servicio.Descripcion,
+                FechaAlta = servicio.FechaAlta
+            };
+
+            return View(servicioVM);
+        }
+
+        // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("Editar/{id}")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,IdRubro,IdEmpresa,Nombre,Descripcion,FechaAlta")] Servicio servicio)
+        [Route("Perfiles/Empresas/{empresaId}/Servicios/Editar/{id}")]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,IdRubro,IdEmpresa,Nombre,Descripcion,FechaAlta")] ServicioViewModel servicio)
         {
             if (id != servicio.Id)
-            {
                 return NotFound();
-            }
 
-            try
+            if (ModelState.IsValid)
             {
-                servicio.FechaModificacion = System.DateTime.Now;
+                Servicio editedServicio = new Servicio
+                {
+                    Id = servicio.Id,
+                    IdRubro = servicio.IdRubro,
+                    IdEmpresa = servicio.IdEmpresa,
+                    Nombre = servicio.Nombre,
+                    Descripcion = servicio.Descripcion,
+                    FechaAlta = servicio.FechaAlta,
+                    FechaModificacion = DateTime.Now
+                };
 
-                _context.Update(servicio);
+                _context.Update(editedServicio);
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction(nameof(Edit));
+                return RedirectToAction("Details", "Empresas", new { id = editedServicio.IdEmpresa });
             }
-            catch
-            {
-                return View();
-            }
+
+            return View(servicio);
         }
 
         // GET: ServiciosController/Delete/5
