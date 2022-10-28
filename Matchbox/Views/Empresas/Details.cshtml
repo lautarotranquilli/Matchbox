@@ -66,52 +66,59 @@
             @Html.DisplayFor(model => model.RazonSocial)
         </h2>
         <div>
-            @Html.DisplayFor(model => model.Telefono)
+            Teléfono: @Html.DisplayFor(model => model.Telefono)
         </div>
-        <div>
-            @Html.DisplayFor(model => model.Localidad) @Html.DisplayFor(model => model.Provincia)
+        <div id="localidadEmpresa">
+            Ubicación:
         </div>
     </div>
 </div>
 
-<h3>Servicios disponibles</h3>
+<h3 class="mt-4">Servicios disponibles</h3>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Nombre
-            </th>
-            <th>
-                Rubro
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.ServiciosList)
-        {
+@if (Model.ServiciosList.Count > 0)
+{
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.sNombre)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.rNombre)
-                </td>
-                <td>
-                    <a asp-controller="Servicios" asp-action="Details" asp-route-id="@item.sId">Ver</a>
-                    @if (ViewBag.ShowOptions)
-                    {
-                        <span> | </span>
-                        <a asp-controller="Servicios" asp-action="Edit" asp-route-id="@item.sId"> Editar</a>
-                        <span> | </span>
-                        <a class="exampleModal2" data-bs-toggle="modal" data-bs-target="#exampleModal2" data-id="@item.sId">Eliminar</a>
-                    }
-                </td>
+                <th>
+                    Nombre
+                </th>
+                <th>
+                    Rubro
+                </th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ServiciosList)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.sNombre)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.rNombre)
+                    </td>
+                    <td>
+                        <a asp-controller="Servicios" asp-action="Details" asp-route-id="@item.sId">Ver</a>
+                        @if (ViewBag.ShowOptions)
+                        {
+                            <span> | </span>
+                            <a asp-controller="Servicios" asp-action="Edit" asp-route-id="@item.sId"> Editar</a>
+                            <span> | </span>
+                            <a class="exampleModal2" data-bs-toggle="modal" data-bs-target="#exampleModal2" data-id="@item.sId">Eliminar</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No hay servicios disponibles</p>
+}
 
 
 
@@ -124,5 +131,30 @@
             var url = "/Servicios/Eliminar/" + $(this).attr('data-id');
             $("#deleteServiceButton").attr("href", url);
         });
+
+        async function getProvincia(code) {
+            const request = "https://apis.datos.gob.ar/georef/api/provincias?id=" + code;
+            const response = await fetch(request);
+            const data = await response.json();
+            return data.provincias[0].nombre;
+        }
+
+        async function getLocalidad(code) {
+            const request = "https://apis.datos.gob.ar/georef/api/localidades?id=" + code;
+            const response = await fetch(request);
+            const data = await response.json();
+            return data.localidades[0].nombre;
+        }
+
+        async function fullLocalidad() {
+            var prov = await getProvincia(@Model.Provincia);
+            var loc = await getLocalidad(@Model.Localidad);
+
+            $("#localidadEmpresa").html("Ubicación: " + loc + " (" + prov + ")");
+        }
+
+        $(document).ready(function () {
+            fullLocalidad();
+        })
     </script>
     }

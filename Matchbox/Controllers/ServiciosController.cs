@@ -26,10 +26,28 @@ namespace Matchbox.Controllers
             return View();
         }
 
-        // GET: ServiciosController/Details/5
-        public ActionResult Details(int id)
+        // GET
+        [Route("{id}")]
+        public async Task<IActionResult> Details(int id)
         {
-            return View();
+            Servicio servicio = await _context.Servicio.FirstOrDefaultAsync(s => s.Id == id);
+
+            if (servicio == null)
+                return NotFound();
+
+            Empresa empresa = await _context.Empresa.FirstOrDefaultAsync(e => e.Id == servicio.IdEmpresa);
+
+            Rubro rubro = await _context.Rubro.FirstOrDefaultAsync(r => r.Id == servicio.IdRubro);
+
+            ServicioViewModel servicioVM = new ServicioViewModel
+            {
+                Nombre = servicio.Nombre,
+                Descripcion = servicio.Descripcion,
+                eNombre = empresa.RazonSocial,
+                rNombre = rubro.Nombre
+            };
+
+            return View(servicioVM);
         }
 
         // GET

@@ -18,5 +18,9 @@ namespace Matchbox.ViewModels
         [Required(ErrorMessage = "Ingrese una descripción.")]
         [StringLength(1000, ErrorMessage = "La descripción no debe superar los 1000 caracteres.")]
         public string Descripcion { get; set; }
+
+        public string eNombre { get; set; }
+
+        public string rNombre { get; set; }
     }
 }
