@@ -8,15 +8,13 @@
 {
     <div class="card">
         <div class="card-body">
-            <a class="btn btn-primary" asp-controller="Servicios" asp-action="Create" asp-route-empresaId="@Model.Id"><b>+</b> Nuevo servicio</a>
+            <a class="btn btn-primary" asp-controller="Servicios" asp-action="Create"><b>+</b> Nuevo servicio</a>
             <a class="btn btn-primary" asp-controller="Empresas" asp-action="Edit" asp-route-id="@Model.Id">Editar perfil</a>
-
-            @*<a class="btn btn-danger" asp-controller="Empresas" asp-action="Delete" asp-route-id="@Model.Id">Eliminar</a>*@
             <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Eliminar perfil</a>
         </div>
     </div>
 
-    <!-- Modal -->
+    <!-- Modals -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -30,6 +28,24 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <a class="btn btn-danger" asp-controller="Empresas" asp-action="Delete" asp-route-id="@Model.Id">Eliminar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModal2Label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModal2Label">Eliminar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ¿Estás seguro que desea eliminar el servicio?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <a class="btn btn-danger" asp-controller="Servicios" asp-action="Delete" id="deleteServiceButton">Eliminar</a>
                 </div>
             </div>
         </div>
@@ -83,9 +99,14 @@
                     @Html.DisplayFor(modelItem => item.rNombre)
                 </td>
                 <td>
-                    <a asp-controller="Empresas" asp-action="Details" asp-route-id="4">Ver</a>
-                    <a asp-controller="Empresas" asp-action="Details" asp-route-id="4"> Editar</a>
-                    <a asp-controller="Empresas" asp-action="Details" asp-route-id="4"> Eliminar</a>
+                    <a asp-controller="Servicios" asp-action="Details" asp-route-id="@item.sId">Ver</a>
+                    @if (ViewBag.ShowOptions)
+                    {
+                        <span> | </span>
+                        <a asp-controller="Servicios" asp-action="Edit" asp-route-id="@item.sId"> Editar</a>
+                        <span> | </span>
+                        <a class="exampleModal2" data-bs-toggle="modal" data-bs-target="#exampleModal2" data-id="@item.sId">Eliminar</a>
+                    }
                 </td>
             </tr>
         }
@@ -98,4 +119,10 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        $(document).on("click", ".exampleModal2", function () {
+            var url = "/Servicios/Eliminar/" + $(this).attr('data-id');
+            $("#deleteServiceButton").attr("href", url);
+        });
+    </script>
     }

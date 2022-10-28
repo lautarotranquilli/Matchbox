@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace Matchbox.Controllers
 {
+    [Route("Servicios")]
     public class ServiciosController : Controller
     {
         private readonly MatchboxDBContext _context;
@@ -32,41 +33,36 @@ namespace Matchbox.Controllers
         }
 
         // GET
-        [Route("Perfiles/Empresas/{empresaId}/Servicios/Nuevo")]
-        public async Task<IActionResult> Create(int? empresaId)
+        [Route("Nuevo")]
+        public async Task<IActionResult> Create()
         {
-            if (HttpContext.Session.Get("_UserID") == null || empresaId == null)
+            if (HttpContext.Session.Get("_UserID") == null)
                 return NotFound();
 
             int idUser = Convert.ToInt32(Encoding.Default.GetString(HttpContext.Session.Get("_UserID")));
 
             Empresa empresa = await _context.Empresa.FirstOrDefaultAsync(e => e.IdUsuario == idUser && e.FechaBaja == null);
 
-            if (empresa == null || empresa.Id != empresaId)
+            if (empresa == null)
                 return NotFound();
 
-            return View();
+            ServicioViewModel newServicio = new ServicioViewModel { IdEmpresa = empresa.Id };
+
+            return View(newServicio);
         }
 
         // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("Perfiles/Empresas/{empresaId}/Servicios/Nuevo")]
-        public async Task<IActionResult> Create(int? empresaId, [Bind("IdRubro,Nombre,Descripcion")] ServicioViewModel servicio)
+        [Route("Nuevo")]
+        public async Task<IActionResult> Create([Bind("IdEmpresa, IdRubro,Nombre,Descripcion")] ServicioViewModel servicio)
         {
-            if (empresaId == null)
-                return NotFound();
-
             if (ModelState.IsValid)
             {
-                int idUser = Convert.ToInt32(Encoding.Default.GetString(HttpContext.Session.Get("_UserID")));
-
-                Empresa empresa = await _context.Empresa.FirstOrDefaultAsync(e => e.IdUsuario == idUser && e.FechaBaja == null);
-
                 Servicio newServicio = new Servicio
                 {
                     IdRubro = servicio.IdRubro,
-                    IdEmpresa = empresa.Id,
+                    IdEmpresa = servicio.IdEmpresa,
                     Nombre = servicio.Nombre,
                     Descripcion = servicio.Descripcion,
                     FechaAlta = DateTime.Today
@@ -82,25 +78,23 @@ namespace Matchbox.Controllers
         }
 
         // GET
-        [Route("Perfiles/Empresas/{empresaId}/Servicios/Editar/{id}")]
-        public async Task<IActionResult> Edit(int? empresaId, int? id)
+        [Route("Editar/{id}")]
+        public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null 
-                || empresaId == null
-                || HttpContext.Session.Get("_UserID") == null)
+            if (id == null || HttpContext.Session.Get("_UserID") == null)
                 return RedirectToAction("Index", "Home");
 
             int idUser = Convert.ToInt32(Encoding.Default.GetString(HttpContext.Session.Get("_UserID")));
 
             Empresa empresa = await _context.Empresa.FirstOrDefaultAsync(e => e.IdUsuario == idUser && e.FechaBaja == null);
 
-            if (empresa == null || empresa.Id != empresaId)
+            if (empresa == null)
                 return RedirectToAction("Index", "Home");
 
-            Servicio servicio = await _context.Servicio.FirstOrDefaultAsync(s => s.Id == id && s.IdEmpresa == empresaId);
+            Servicio servicio = await _context.Servicio.FirstOrDefaultAsync(s => s.Id == id && s.IdEmpresa == empresa.Id);
 
             if (servicio == null)
-                return RedirectToAction("Details", "Empresas", new { id = empresaId });
+                return RedirectToAction("Details", "Empresas", new { id = empresa.Id });
 
             ServicioViewModel servicioVM = new ServicioViewModel
             {
@@ -118,7 +112,7 @@ namespace Matchbox.Controllers
         // POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("Perfiles/Empresas/{empresaId}/Servicios/Editar/{id}")]
+        [Route("Editar/{id}")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,IdRubro,IdEmpresa,Nombre,Descripcion,FechaAlta")] ServicioViewModel servicio)
         {
             if (id != servicio.Id)
@@ -147,23 +141,24 @@ namespace Matchbox.Controllers
         }
 
         // GET: ServiciosController/Delete/5
+        [Route("Eliminar/{id}")]
         public async Task<IActionResult> Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: ServiciosController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                Servicio servicio = await _context.Servicio.FirstOrDefaultAsync(s => s.Id == id);
+
+                servicio.FechaModificacion = DateTime.Now;
+                servicio.FechaBaja = DateTime.Now.Date;
+
+                _context.Update(servicio);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Details", "Empresas", new { id = servicio.IdEmpresa });
             }
-            catch
+            catch (DbUpdateConcurrencyException)
             {
-                return View();
+                return NotFound();
             }
         }
     }

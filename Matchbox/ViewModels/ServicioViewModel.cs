@@ -12,9 +12,11 @@ namespace Matchbox.ViewModels
         public int IdEmpresa { get; set; }
 
         [Required(ErrorMessage = "Ingrese un nombre.")]
+        [StringLength(50, ErrorMessage = "El nombre no debe superar los 50 caracteres.")]
         public string Nombre { get; set; }
 
         [Required(ErrorMessage = "Ingrese una descripción.")]
+        [StringLength(1000, ErrorMessage = "La descripción no debe superar los 1000 caracteres.")]
         public string Descripcion { get; set; }
     }
 }

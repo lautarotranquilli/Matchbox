@@ -61,7 +61,6 @@
             const result = await getRubros();
 
             let dataProvices = $.map(result, function (prov) {
-                console.log(prov);
                 prov.id = prov.id
                 prov.text = prov.nombre;
                 return prov;
@@ -75,6 +74,7 @@
             })
             
             $('#RubroDrop').val($('#IdRubro').val());
+            $('#RubroDrop').trigger('change');
         }());
 
         $(document).ready(function () {
