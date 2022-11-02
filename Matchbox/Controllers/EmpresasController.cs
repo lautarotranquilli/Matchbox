@@ -319,5 +319,64 @@ namespace Matchbox.Controllers
             }
             return uniqueFileName;
         }
+
+        [Route("ServiciosList")]
+        public async Task<IActionResult> ServicesList(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            if (id == 0)
+                return RedirectToAction("Create");
+
+            int? idUser = 0;
+            if (HttpContext.Session.Get("_UserID") != null)
+                idUser = Convert.ToInt32(Encoding.Default.GetString(HttpContext.Session.Get("_UserID")));
+
+            Empresa empresa = await _context.Empresa.FirstOrDefaultAsync(e => e.IdUsuario == id && e.FechaBaja == null);
+
+            if (empresa == null)
+                return RedirectToAction("Create");
+
+            EmpresaViewModel empresaVM = new EmpresaViewModel
+            {
+                Id = empresa.Id,
+                IdUsuario = empresa.IdUsuario,
+                RazonSocial = empresa.RazonSocial,
+                Telefono = empresa.Telefono,
+                Email = empresa.Email,
+                Provincia = empresa.IdProvincia,
+                Localidad = empresa.IdLocalidad,
+                FotoPerfil = null,
+                FotoPerfilPath = empresa.ProfilePath,
+                FotoPerfilPath_Old = empresa.ProfilePath,
+                FechaAlta = empresa.FechaAlta,
+            };
+
+            var servicios = await _context.Servicio
+                                            .Join(inner: _context.Rubro,
+                                                  outerKeySelector: ser => ser.IdRubro,
+                                                  innerKeySelector: rub => rub.Id,
+                                                  resultSelector: (ser, rub) => new ServiciosListViewModel
+                                                  {
+                                                      sId = ser.Id,
+                                                      sNombre = ser.Nombre,
+                                                      rNombre = rub.Nombre,
+                                                      sFechaBaja = ser.FechaBaja,
+                                                      sEmpresa = ser.IdEmpresa
+                                                  })
+                                            .Where(x => x.sEmpresa == empresaVM.Id && x.sFechaBaja == null)
+                                            .ToListAsync();
+
+            if (servicios != null)
+            {
+                empresaVM.ServiciosList = new List<ServiciosListViewModel>();
+                servicios.ForEach(s => empresaVM.ServiciosList.Add(s));
+            }
+            //empresaVM.ServiciosList = servicios;
+
+            ViewBag.ShowOptions = HttpContext.Session.GetString("_UserAdmin") == "1" || empresa.IdUsuario == idUser;
+            return View(empresaVM);
+        }
     }
 }

@@ -1,0 +1,51 @@
+﻿@model Matchbox.Models.EmpresaViewModel
+
+@{
+    ViewData["Title"] = "Servicios disponibles";
+}
+
+<h3 class="mt-4">Servicios disponibles</h3>
+
+@if (Model.ServiciosList.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Nombre
+                </th>
+                <th>
+                    Rubro
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ServiciosList)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.sNombre)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.rNombre)
+                    </td>
+                    <td>
+                        <a asp-controller="Servicios" asp-action="Details" asp-route-id="@item.sId">Ver</a>
+                        @if (ViewBag.ShowOptions)
+                        {
+                            <span> | </span>
+                            <a asp-controller="Servicios" asp-action="Edit" asp-route-id="@item.sId"> Editar</a>
+                            <span> | </span>
+                            <a class="exampleModal2" data-bs-toggle="modal" data-bs-target="#exampleModal2" data-id="@item.sId">Eliminar</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No hay servicios disponibles</p>
+}

@@ -3,8 +3,12 @@ using Matchbox.Models;
 using Matchbox.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,12 +22,34 @@ namespace Matchbox.Controllers
         public ServiciosController(MatchboxDBContext context)
         {
             _context = context;
+            
         }
 
         // GET
         public ActionResult Index()
         {
+            
             return View();
+        }
+
+        [Route("GetList")]
+        public async Task<IActionResult> GetListServices()
+        {
+            List<ServicioViewModel> servicioToList = new List<ServicioViewModel>();
+            var servicios = await _context.Servicio.ToArrayAsync();
+
+            foreach (var servicio in servicios)
+            {
+
+                servicioToList.Add(new ServicioViewModel
+                {
+                    Id = servicio.Id,
+                    Nombre = servicio.Nombre,
+                    Descripcion = servicio.Descripcion,
+                });
+            }
+
+            return View(servicioToList);
         }
 
         // GET

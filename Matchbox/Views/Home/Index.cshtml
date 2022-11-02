@@ -1,4 +1,6 @@
-﻿@{
+﻿@model List<Matchbox.ViewModels.ServicioViewModel>
+
+@{
     ViewData["Title"] = "Inicio";
 }
 
@@ -45,16 +47,20 @@
         </div>
         <div class="features-wrapper">
             <div class="features-active">
-                @for (var i = 0; i < 10; i++)
+                @for(var i=0;i<10;i++)
                 {
-                    <div class="card" style="width: 18rem;">
-                        <div class="card-body">
-                            <h5 class="card-title">SERVICIO</h5>
-                            <p class="card-text limitedText_50">DESCRIPCIÓN...</p>
-                            <a href="#" class="btn btn-primary">VER</a>
+                    @foreach (var servicio in Model)
+                    {
+                        <div class="card" style="width: 18rem;">
+                            <div class="card-body">
+                                <h5 class="card-title">@servicio.Nombre</h5>
+                                <p class="card-text limitedText_50">@servicio.Descripcion</p>
+                                <a href="Servicios/@servicio.Id" class="btn btn-primary">VER</a>
+                            </div>
                         </div>
-                    </div>
+                    }
                 }
+                
             </div>
             <div class="slider-arrows">
                 <div class="prev-arrow">

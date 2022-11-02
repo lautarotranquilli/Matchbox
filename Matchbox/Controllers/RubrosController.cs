@@ -1,6 +1,9 @@
 ﻿using Matchbox.Data;
+using Matchbox.Models;
+using Matchbox.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,5 +26,25 @@ namespace Matchbox.Controllers
 
             return Ok(response);
         }
+
+        [Route("RubrosList")]
+        public async Task<IActionResult> RubrosList()
+        {
+            List<RubrosViewModel> rubrosToList = new List<RubrosViewModel>();
+            var rubros = await _context.Rubro.ToArrayAsync();
+
+            foreach (var rubro in rubros)
+            {
+
+                rubrosToList.Add(new RubrosViewModel
+                {
+                    Id = rubro.Id,
+                    Nombre = rubro.Nombre,
+                }) ;
+            }
+
+            return View(rubrosToList);
+        }
+           
     }
 }
