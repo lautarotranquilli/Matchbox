@@ -73,9 +73,7 @@
                                         <ul class="sub-menu">
                                             <li><a asp-controller="Cliente" asp-action="Details" asp-route-id="@userId">Perfil cliente</a></li>
                                             <li><a asp-controller="Empresas" asp-action="Details" asp-route-id="@userId">Perfil empresa</a></li>
-                                            <li><a asp-controller="Empresas" asp-action="ServicesList" asp-route-id="@userId">Servicios contratados</a></li>
-                                            <li><a href="#">Mi agenda de trabajo</a></li>
-                                        </ul>
+                                            <li><a asp-controller="Empresas" asp-action="ServicesList" asp-route-id="@userId">Servicios disponibles</a></li>                                        </ul>
                                     </li>
                                     if (admin)
                                     {

@@ -4,6 +4,24 @@
     ViewData["Title"] = "Servicios disponibles";
 }
 
+<div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModal2Label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModal2Label">Eliminar</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro que desea eliminar el servicio?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <a class="btn btn-danger" asp-controller="Servicios" asp-action="Delete" id="deleteServiceButton">Eliminar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <h3 class="mt-4">Servicios disponibles</h3>
 
 @if (Model.ServiciosList.Count > 0)
@@ -49,3 +67,16 @@ else
 {
     <p>No hay servicios disponibles</p>
 }
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).on("click", ".exampleModal2", function () {
+            var url = "/Servicios/Eliminar/" + $(this).attr('data-id');
+            $("#deleteServiceButton").attr("href", url);
+        });
+    </script>
+
+        }

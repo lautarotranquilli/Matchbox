@@ -36,7 +36,7 @@ namespace Matchbox.Controllers
         public async Task<IActionResult> GetListServices()
         {
             List<ServicioViewModel> servicioToList = new List<ServicioViewModel>();
-            var servicios = await _context.Servicio.ToArrayAsync();
+            var servicios = await _context.Servicio.Where(s => s.FechaBaja == null).ToArrayAsync();
 
             foreach (var servicio in servicios)
             {
