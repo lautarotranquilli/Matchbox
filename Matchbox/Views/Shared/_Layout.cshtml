@@ -32,59 +32,61 @@
                         <a class="nav-logo" asp-controller="Home" asp-action="Index">
                             <img src="~/img/logo.png" alt="logo" />
                         </a>
-                        <div class="search-bar mx-auto">
-                            <input type="text" placeholder="Buscar...">
-                            <div class="icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20.414" height="20.414"
-                                     viewBox="0 0 20.414 20.414">
-                                    <g id="Search_Icon" data-name="Search Icon" transform="translate(1 1)">
-                                        <ellipse id="Ellipse_1" data-name="Ellipse 1" cx="8.158" cy="8" rx="8.158"
-                                                 ry="8" fill="none" stroke="#1a2224" stroke-linecap="round"
-                                                 stroke-linejoin="round" stroke-width="2" />
-                                        <line id="Line_4" data-name="Line 4" x1="3.569" y1="3.5"
-                                              transform="translate(14.431 14.5)" fill="none" stroke="#1a2224"
-                                              stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-                                    </g>
-                                </svg>
+                        <form asp-controller="Servicios" asp-action="Buscar" enctype="multipart/form-data">
+                            <div class="search-bar mx-auto">
+                                <input type="text" placeholder="Buscar..." id="fname" name="fname">
+                                <div class="icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20.414" height="20.414"
+                                         viewBox="0 0 20.414 20.414">
+                                        <g id="Search_Icon" data-name="Search Icon" transform="translate(1 1)">
+                                            <ellipse id="Ellipse_1" data-name="Ellipse 1" cx="8.158" cy="8" rx="8.158"
+                                                     ry="8" fill="none" stroke="#1a2224" stroke-linecap="round"
+                                                     stroke-linejoin="round" stroke-width="2" />
+                                            <line id="Line_4" data-name="Line 4" x1="3.569" y1="3.5"
+                                                  transform="translate(14.431 14.5)" fill="none" stroke="#1a2224"
+                                                  stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                                        </g>
+                                    </svg>
+                                </div>
                             </div>
-                        </div>
+                        </form>
                         <ul class="main-menu d-flex align-items-center m-0">
-                            <li><a asp-controller="Home" asp-action="Index">Inicio</a></li>
+                            @*<li><a asp-controller="Home" asp-action="Index">Inicio</a></li>*@
                             <li><a asp-controller="Rubros" asp-action="RubrosList">Rubros</a></li>
                             <li><a asp-controller="Servicios" asp-action="GetListServices">Servicios disponibles</a></li>
                             @{
                                 if (login)
                                 {
 
-                                                <li>
-                                                    <a>
-                                                        Personal
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="9.98" height="5.69"
-                                                         viewBox="0 0 9.98 5.69">
-                                                            <g id="Arrow" transform="translate(0.99 0.99)">
-                                                                <path id="Arrow-2" data-name="Arrow" d="M1474.286,26.4l4,4,4-4"
-                                                                  transform="translate(-1474.286 -26.4)" fill="none" stroke="#1a2224"
-                                                                  stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4" />
-                                                            </g>
-                                                        </svg>
-                                                    </a>
-                                                    <ul class="sub-menu">
-                                                        <li><a asp-controller="Cliente" asp-action="Details" asp-route-id="@userId">Perfil cliente</a></li>
-                                                        <li><a asp-controller="Empresas" asp-action="Details" asp-route-id="@userId">Perfil empresa</a></li>
-                                                        <li><a asp-controller="Empresas" asp-action="ServicesList" asp-route-id="@userId">Servicios contratados</a></li>
-                                                        <li><a href="#">Mi agenda de trabajo</a></li>
-                                                    </ul>
-                                                </li>
+                                    <li>
+                                        <a>
+                                            Personal
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="9.98" height="5.69"
+                                             viewBox="0 0 9.98 5.69">
+                                                <g id="Arrow" transform="translate(0.99 0.99)">
+                                                    <path id="Arrow-2" data-name="Arrow" d="M1474.286,26.4l4,4,4-4"
+                                                      transform="translate(-1474.286 -26.4)" fill="none" stroke="#1a2224"
+                                                      stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4" />
+                                                </g>
+                                            </svg>
+                                        </a>
+                                        <ul class="sub-menu">
+                                            <li><a asp-controller="Cliente" asp-action="Details" asp-route-id="@userId">Perfil cliente</a></li>
+                                            <li><a asp-controller="Empresas" asp-action="Details" asp-route-id="@userId">Perfil empresa</a></li>
+                                            <li><a asp-controller="Empresas" asp-action="ServicesList" asp-route-id="@userId">Servicios contratados</a></li>
+                                            <li><a href="#">Mi agenda de trabajo</a></li>
+                                        </ul>
+                                    </li>
                                     if (admin)
                                     {
-                                                <li><a asp-controller="Home" asp-action="Admin">Admin</a></li>
+                                        <li><a asp-controller="Home" asp-action="Admin">Admin</a></li>
                                     }
-                                            <li><a asp-controller="Usuarios" asp-action="LogOff">Cerrar sesión</a></li>
+                                    <li><a asp-controller="Usuarios" asp-action="LogOff">Cerrar sesión</a></li>
                                 }
                                 else
                                 {
-                                            <li><a asp-controller="Usuarios" asp-action="SignIn">Iniciar sesión</a></li>
-                                            <li><a asp-controller="Usuarios" asp-action="Create">Registrarse</a></li>
+                                    <li><a asp-controller="Usuarios" asp-action="SignIn">Iniciar sesión</a></li>
+                                    <li><a asp-controller="Usuarios" asp-action="Create">Registrarse</a></li>
                                 }
                             }
                         </ul>
@@ -121,16 +123,16 @@
                             @{
                                 if (login)
                                 {
-                                            <li><a asp-controller="Cliente" asp-action="Details" asp-route-id="@userId">Perfil cliente</a></li>
-                                            <li><a asp-controller="Empresas" asp-action="Details" asp-route-id="@userId">Perfil empresa</a></li>
-                                            <li><a href="#">Servicios contratados</a></li>
-                                            <li><a href="#">Mi agenda de trabajo</a></li>
-                                            <li><a asp-controller="Usuarios" asp-action="LogOff">Cerrar sesión</a></li>
+                                    <li><a asp-controller="Cliente" asp-action="Details" asp-route-id="@userId">Perfil cliente</a></li>
+                                    <li><a asp-controller="Empresas" asp-action="Details" asp-route-id="@userId">Perfil empresa</a></li>
+                                    <li><a href="#">Servicios contratados</a></li>
+                                    <li><a href="#">Mi agenda de trabajo</a></li>
+                                    <li><a asp-controller="Usuarios" asp-action="LogOff">Cerrar sesión</a></li>
                                 }
                                 else
                                 {
-                                            <li><a asp-controller="Usuarios" asp-action="SignIn">Iniciar sesión</a></li>
-                                            <li><a asp-controller="Usuarios" asp-action="Create">Registrarse</a></li>
+                                    <li><a asp-controller="Usuarios" asp-action="SignIn">Iniciar sesión</a></li>
+                                    <li><a asp-controller="Usuarios" asp-action="Create">Registrarse</a></li>
                                 }
                             }
                         </ul>

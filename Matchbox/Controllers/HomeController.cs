@@ -15,23 +15,19 @@ namespace Matchbox.Controllers
 {
     public class HomeController : Controller
     {
-        //private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<HomeController> _logger;
         private readonly MatchboxDBContext _context;
 
-        //public HomeController(ILogger<HomeController> logger)
-        //{
-        //    _logger = logger;
-        //}
-
-        public HomeController(MatchboxDBContext context)
+        public HomeController(MatchboxDBContext context, ILogger<HomeController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index()
         {
             List<ServicioViewModel> servicioToList = new List<ServicioViewModel>();
-            var servicios = await _context.Servicio.ToArrayAsync();
+            var servicios = await _context.Servicio.Where(s => s.FechaBaja == null).Take(10).ToArrayAsync();
 
             foreach (var servicio in servicios)
             {

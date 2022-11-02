@@ -52,6 +52,25 @@ namespace Matchbox.Controllers
             return View(servicioToList);
         }
 
+        [Route("GetList/{rubroID}")]
+        public async Task<IActionResult> GetListServicesByRubro(int rubroID)
+        {
+            List<ServicioViewModel> servicioToList = new List<ServicioViewModel>();
+            var servicios = await _context.Servicio.Where(s => s.IdRubro == rubroID && s.FechaBaja == null).ToArrayAsync();
+
+            foreach (var servicio in servicios)
+            {
+                servicioToList.Add(new ServicioViewModel
+                {
+                    Id = servicio.Id,
+                    Nombre = servicio.Nombre,
+                    Descripcion = servicio.Descripcion,
+                });
+            }
+
+            return View("GetListServices", servicioToList);
+        }
+
         // GET
         [Route("{id}")]
         public async Task<IActionResult> Details(int id)
@@ -69,8 +88,8 @@ namespace Matchbox.Controllers
             {
                 Nombre = servicio.Nombre,
                 Descripcion = servicio.Descripcion,
-                eNombre = empresa.RazonSocial,
-                rNombre = rubro.Nombre
+                rNombre = rubro.Nombre,
+                empresa = empresa
             };
 
             return View(servicioVM);
@@ -205,5 +224,27 @@ namespace Matchbox.Controllers
                 return NotFound();
             }
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Buscar")]
+        public async Task<IActionResult> Buscar(string fname)
+        {
+            List<ServicioViewModel> servicioToList = new List<ServicioViewModel>();
+            var servicios = await _context.Servicio.Where(s => s.Nombre.Contains(fname)).ToArrayAsync();
+
+            foreach (var servicio in servicios)
+            {
+                servicioToList.Add(new ServicioViewModel
+                {
+                    Id = servicio.Id,
+                    Nombre = servicio.Nombre,
+                    Descripcion = servicio.Descripcion,
+                });
+            }
+
+            return View("GetListServices", servicioToList);
+        }
+
     }
 }

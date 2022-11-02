@@ -4,6 +4,33 @@
     ViewData["Title"] = @Model.Nombre;
 }
 
+<!-- Modals -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">CONTRATAR</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p style="color:black;">
+                    Para contratar el servicio comunicate por alguno de los siguientes medios:
+                </p>
+                <ul>
+                    <li id="localidadEmpresa"></li>
+                    <li><b>Telefono:</b> @Html.DisplayFor(model => model.empresa.Telefono)</li>
+                    <li><b>Email:</b> @Html.DisplayFor(model => model.empresa.Email)</li>
+                </ul>
+            </div>
+            @*            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <a class="btn btn-danger" asp-controller="Empresas" asp-action="Delete" asp-route-id="@Model.Id">Eliminar</a>
+            </div>
+            *@
+        </div>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-12 col-md-10">
         <h1>
@@ -11,13 +38,46 @@
         </h1>
     </div>
     <div class="col-12 col-md-2 align-items-end">
-        <a class="btn btn-primary">Contratar</a>
+        @*<a class="btn btn-primary">Contratar</a>*@
+        <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Contratar</a>
     </div>
     <h6 class="border-top pt-2 m-0">
         <span class="text-danger">@Html.DisplayFor(model => model.rNombre)</span>
-        - Ofrecido por @Html.DisplayFor(model => model.eNombre)
+        - Ofrecido por @Html.DisplayFor(model => model.empresa.RazonSocial)
     </h6>
     <p class="mt-3" style="text-align: justify;">
         @Html.DisplayFor(model => model.Descripcion)
     </p>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        async function getProvincia(code) {
+            const request = "https://apis.datos.gob.ar/georef/api/provincias?id=" + code;
+            const response = await fetch(request);
+            const data = await response.json();
+            return data.provincias[0].nombre;
+        }
+
+        async function getLocalidad(code) {
+            const request = "https://apis.datos.gob.ar/georef/api/localidades?id=" + code;
+            const response = await fetch(request);
+            const data = await response.json();
+            return data.localidades[0].nombre;
+        }
+
+        async function fullLocalidad() {
+            var prov = await getProvincia(@Model.empresa.IdProvincia);
+            var loc = await getLocalidad(@Model.empresa.IdLocalidad);
+
+            $("#localidadEmpresa").html("<b>Localidad:</b> " + loc + " (" + prov + ")");
+        }
+
+        $(document).ready(function () {
+            fullLocalidad();
+        })
+    </script>
+    }

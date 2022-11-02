@@ -22,5 +22,7 @@ namespace Matchbox.ViewModels
         public string eNombre { get; set; }
 
         public string rNombre { get; set; }
+
+        public Empresa empresa { get; set; }
     }
 }
