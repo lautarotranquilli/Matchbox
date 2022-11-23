@@ -1,21 +1,20 @@
 ﻿@model Matchbox.Models.EmpresaViewModel
 
 @{
-    ViewData["Title"] = "Editar perfil de empresa";
+    ViewData["Title"] = "Perfil empresas";
 }
 
 @if (ViewBag.ShowOptions)
 {
     <div class="card">
         <div class="card-body">
-            <a class="btn btn-primary" asp-controller="Empresas" asp-action="Edit" asp-route-id="@Model.Id">Editar</a>
-
-            @*<a class="btn btn-danger" asp-controller="Empresas" asp-action="Delete" asp-route-id="@Model.Id">Eliminar</a>*@
-            <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Eliminar</a>
+            <a class="btn btn-primary" asp-controller="Servicios" asp-action="Create"><b>+</b> Nuevo servicio</a>
+            <a class="btn btn-primary" asp-controller="Empresas" asp-action="Edit" asp-route-id="@Model.Id">Editar perfil</a>
+            <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">Eliminar perfil</a>
         </div>
     </div>
 
-    <!-- Modal -->
+    <!-- Modals -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -29,6 +28,24 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <a class="btn btn-danger" asp-controller="Empresas" asp-action="Delete" asp-route-id="@Model.Id">Eliminar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModal2Label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModal2Label">Eliminar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ¿Estás seguro que desea eliminar el servicio?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <a class="btn btn-danger" asp-controller="Servicios" asp-action="Delete" id="deleteServiceButton">Eliminar</a>
                 </div>
             </div>
         </div>
@@ -49,17 +66,95 @@
             @Html.DisplayFor(model => model.RazonSocial)
         </h2>
         <div>
-            @Html.DisplayFor(model => model.Telefono)
+            Teléfono: @Html.DisplayFor(model => model.Telefono)
         </div>
-        <div>
-            @Html.DisplayFor(model => model.Localidad) @Html.DisplayFor(model => model.Provincia)
+        <div id="localidadEmpresa">
+            Ubicación:
         </div>
     </div>
 </div>
+
+<h3 class="mt-4">Servicios disponibles</h3>
+
+@if (Model.ServiciosList.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Nombre
+                </th>
+                <th>
+                    Rubro
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ServiciosList)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.sNombre)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.rNombre)
+                    </td>
+                    <td>
+                        <a asp-controller="Servicios" asp-action="Details" asp-route-id="@item.sId">Ver</a>
+                        @if (ViewBag.ShowOptions)
+                        {
+                            <span> | </span>
+                            <a asp-controller="Servicios" asp-action="Edit" asp-route-id="@item.sId"> Editar</a>
+                            <span> | </span>
+                            <a class="exampleModal2" data-bs-toggle="modal" data-bs-target="#exampleModal2" data-id="@item.sId">Eliminar</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No hay servicios disponibles</p>
+}
+
 
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        $(document).on("click", ".exampleModal2", function () {
+            var url = "/Servicios/Eliminar/" + $(this).attr('data-id');
+            $("#deleteServiceButton").attr("href", url);
+        });
+
+        async function getProvincia(code) {
+            const request = "https://apis.datos.gob.ar/georef/api/provincias?id=" + code;
+            const response = await fetch(request);
+            const data = await response.json();
+            return data.provincias[0].nombre;
+        }
+
+        async function getLocalidad(code) {
+            const request = "https://apis.datos.gob.ar/georef/api/localidades?id=" + code;
+            const response = await fetch(request);
+            const data = await response.json();
+            return data.localidades[0].nombre;
+        }
+
+        async function fullLocalidad() {
+            var prov = await getProvincia(@Model.Provincia);
+            var loc = await getLocalidad(@Model.Localidad);
+
+            $("#localidadEmpresa").html("Ubicación: " + loc + " (" + prov + ")");
+        }
+
+        $(document).ready(function () {
+            fullLocalidad();
+        })
+    </script>
     }

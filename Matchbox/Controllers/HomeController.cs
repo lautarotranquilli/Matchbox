@@ -1,6 +1,9 @@
-﻿using Matchbox.Models;
+﻿using Matchbox.Data;
+using Matchbox.Models;
+using Matchbox.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -13,15 +16,31 @@ namespace Matchbox.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly MatchboxDBContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(MatchboxDBContext context, ILogger<HomeController> logger)
         {
+            _context = context;
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            List<ServicioViewModel> servicioToList = new List<ServicioViewModel>();
+            var servicios = await _context.Servicio.Where(s => s.FechaBaja == null).Take(10).ToArrayAsync();
+
+            foreach (var servicio in servicios)
+            {
+
+                servicioToList.Add(new ServicioViewModel
+                {
+                    Id = servicio.Id,
+                    Nombre = servicio.Nombre,
+                    Descripcion = servicio.Descripcion,
+                });
+            }
+
+            return View(servicioToList);
         }
 
         public IActionResult Privacy()
